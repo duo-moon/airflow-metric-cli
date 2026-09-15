@@ -1,0 +1,4 @@
+package: airflowv1
+output: types.gen.go
+generate:
+  models: true

@@ -12,19 +12,19 @@ import (
 	"time"
 
 	"github.com/duo-moon/airflow-metric-cli/internal/model"
-	"github.com/duo-moon/airflow-metric-cli/internal/source/rest/airflow"
+	"github.com/duo-moon/airflow-metric-cli/internal/source/rest/airflowv1"
 )
 
 // ---------- health ----------
 
 // ClusterHealthNow stamps ClusterHealth with time.Now().
-func ClusterHealthNow(h *airflow.HealthInfo) model.ClusterHealth {
+func ClusterHealthNow(h *airflowv1.HealthInfo) model.ClusterHealth {
 	return ClusterHealth(h, time.Now())
 }
 
 // ClusterHealth converts /health with an observation timestamp supplied by
 // the caller (so tests can freeze time).
-func ClusterHealth(h *airflow.HealthInfo, observedAt time.Time) model.ClusterHealth {
+func ClusterHealth(h *airflowv1.HealthInfo, observedAt time.Time) model.ClusterHealth {
 	if h == nil {
 		return model.ClusterHealth{ObservedAt: observedAt}
 	}
@@ -59,7 +59,7 @@ func ClusterHealth(h *airflow.HealthInfo, observedAt time.Time) model.ClusterHea
 	return out
 }
 
-func mapHealthStatus(s *airflow.HealthStatus) model.HealthStatus {
+func mapHealthStatus(s *airflowv1.HealthStatus) model.HealthStatus {
 	if s == nil {
 		return model.HealthUnknown
 	}
@@ -76,7 +76,7 @@ func mapHealthStatus(s *airflow.HealthStatus) model.HealthStatus {
 // ---------- dag runs ----------
 
 // DagRun maps one DAGRun. Returns nil if dag_id or dag_run_id are missing.
-func DagRun(r *airflow.DAGRun) *model.DagRun {
+func DagRun(r *airflowv1.DAGRun) *model.DagRun {
 	if r == nil || r.DagId == nil || r.DagRunId == nil {
 		return nil
 	}
@@ -99,7 +99,7 @@ func DagRun(r *airflow.DAGRun) *model.DagRun {
 }
 
 // DagRuns maps a collection, skipping entries missing required keys.
-func DagRuns(in []airflow.DAGRun) []model.DagRun {
+func DagRuns(in []airflowv1.DAGRun) []model.DagRun {
 	out := make([]model.DagRun, 0, len(in))
 	for i := range in {
 		if m := DagRun(&in[i]); m != nil {
@@ -109,7 +109,7 @@ func DagRuns(in []airflow.DAGRun) []model.DagRun {
 	return out
 }
 
-func mapDagRunState(s *airflow.DagState) model.DagRunState {
+func mapDagRunState(s *airflowv1.DagState) model.DagRunState {
 	if s == nil {
 		return ""
 	}
@@ -119,7 +119,7 @@ func mapDagRunState(s *airflow.DagState) model.DagRunState {
 // ---------- pools ----------
 
 // Pool maps one pool. Returns nil if name is missing.
-func Pool(p *airflow.Pool) *model.Pool {
+func Pool(p *airflowv1.Pool) *model.Pool {
 	if p == nil || p.Name == nil {
 		return nil
 	}
@@ -136,7 +136,7 @@ func Pool(p *airflow.Pool) *model.Pool {
 }
 
 // Pools maps a collection.
-func Pools(in []airflow.Pool) []model.Pool {
+func Pools(in []airflowv1.Pool) []model.Pool {
 	out := make([]model.Pool, 0, len(in))
 	for i := range in {
 		if m := Pool(&in[i]); m != nil {
@@ -149,7 +149,7 @@ func Pools(in []airflow.Pool) []model.Pool {
 // ---------- import errors ----------
 
 // ImportError maps a single import error. Returns nil if ID is missing.
-func ImportError(e *airflow.ImportError) *model.ImportError {
+func ImportError(e *airflowv1.ImportError) *model.ImportError {
 	if e == nil || e.ImportErrorId == nil {
 		return nil
 	}
@@ -162,7 +162,7 @@ func ImportError(e *airflow.ImportError) *model.ImportError {
 }
 
 // ImportErrors maps a collection.
-func ImportErrors(in []airflow.ImportError) []model.ImportError {
+func ImportErrors(in []airflowv1.ImportError) []model.ImportError {
 	out := make([]model.ImportError, 0, len(in))
 	for i := range in {
 		if m := ImportError(&in[i]); m != nil {
@@ -176,7 +176,7 @@ func ImportErrors(in []airflow.ImportError) []model.ImportError {
 
 // TaskInstance maps one task instance. Returns nil if task_id or dag_id are
 // missing.
-func TaskInstance(t *airflow.TaskInstance) *model.TaskInstance {
+func TaskInstance(t *airflowv1.TaskInstance) *model.TaskInstance {
 	if t == nil || t.DagId == nil || t.TaskId == nil {
 		return nil
 	}
@@ -207,7 +207,7 @@ func TaskInstance(t *airflow.TaskInstance) *model.TaskInstance {
 }
 
 // TaskInstances maps a collection, skipping entries missing required keys.
-func TaskInstances(in []airflow.TaskInstance) []model.TaskInstance {
+func TaskInstances(in []airflowv1.TaskInstance) []model.TaskInstance {
 	out := make([]model.TaskInstance, 0, len(in))
 	for i := range in {
 		if m := TaskInstance(&in[i]); m != nil {
@@ -221,7 +221,7 @@ func TaskInstances(in []airflow.TaskInstance) []model.TaskInstance {
 
 // TaskAttempts maps the /tries collection into ordered model attempts.
 // Entries without try_number are skipped; result is sorted ascending.
-func TaskAttempts(in []airflow.TaskInstanceHistory) []model.TaskAttempt {
+func TaskAttempts(in []airflowv1.TaskInstanceHistory) []model.TaskAttempt {
 	out := make([]model.TaskAttempt, 0, len(in))
 	for i := range in {
 		h := &in[i]
@@ -251,8 +251,8 @@ func TaskAttempts(in []airflow.TaskInstanceHistory) []model.TaskAttempt {
 // item doesn't crash the panel.
 //
 // Sits in mapper rather than in the collector because it operates on the
-// generated DTO directly — the collector never sees raw airflow.* types.
-func AggregateWaiting(items []airflow.TaskInstance) []model.WaitingCount {
+// generated DTO directly — the collector never sees raw airflowv1.* types.
+func AggregateWaiting(items []airflowv1.TaskInstance) []model.WaitingCount {
 	type key struct{ dag, run string }
 	agg := make(map[key]*model.WaitingCount)
 	for i := range items {

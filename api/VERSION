@@ -1,0 +1,7 @@
+v1 (Airflow 2.x, /api/v1):
+  airflow-v1-openapi.yaml pinned to apache/airflow tag 2.10.5
+  source: https://raw.githubusercontent.com/apache/airflow/2.10.5/airflow/api_connexion/openapi/v1.yaml
+
+v2 (Airflow 3.x, /api/v2):
+  airflow-v2-openapi.yaml pinned to apache/airflow tag 3.0.5
+  source: https://raw.githubusercontent.com/apache/airflow/3.0.5/airflow-core/src/airflow/api_fastapi/core_api/openapi/v2-rest-api-generated.yaml

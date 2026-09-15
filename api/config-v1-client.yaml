@@ -1,0 +1,4 @@
+package: airflowv1
+output: client.gen.go
+generate:
+  client: true

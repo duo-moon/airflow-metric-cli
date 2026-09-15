@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/duo-moon/airflow-metric-cli/internal/model"
-	"github.com/duo-moon/airflow-metric-cli/internal/source/rest/airflow"
+	"github.com/duo-moon/airflow-metric-cli/internal/source/rest/airflowv1"
 )
 
 func ptr[T any](v T) *T { return &v }
@@ -14,14 +14,14 @@ func TestClusterHealth_AllComponents(t *testing.T) {
 	t.Parallel()
 
 	heartbeat := "2026-08-17T18:00:00Z"
-	healthy := airflow.HealthStatus("healthy")
-	unhealthy := airflow.HealthStatus("unhealthy")
-	weird := airflow.HealthStatus("mystery")
+	healthy := airflowv1.HealthStatus("healthy")
+	unhealthy := airflowv1.HealthStatus("unhealthy")
+	weird := airflowv1.HealthStatus("mystery")
 
-	in := &airflow.HealthInfo{
-		Scheduler:    &airflow.SchedulerStatus{Status: &healthy, LatestSchedulerHeartbeat: &heartbeat},
-		Metadatabase: &airflow.MetadatabaseStatus{Status: &unhealthy},
-		Triggerer:    &airflow.TriggererStatus{Status: &weird},
+	in := &airflowv1.HealthInfo{
+		Scheduler:    &airflowv1.SchedulerStatus{Status: &healthy, LatestSchedulerHeartbeat: &heartbeat},
+		Metadatabase: &airflowv1.MetadatabaseStatus{Status: &unhealthy},
+		Triggerer:    &airflowv1.TriggererStatus{Status: &weird},
 	}
 	obs := time.Now()
 	got := ClusterHealth(in, obs)
@@ -65,10 +65,10 @@ func TestDagRun_RequiredKeys(t *testing.T) {
 	if DagRun(nil) != nil {
 		t.Error("nil DAGRun must map to nil")
 	}
-	if DagRun(&airflow.DAGRun{DagId: ptr("d")}) != nil {
+	if DagRun(&airflowv1.DAGRun{DagId: ptr("d")}) != nil {
 		t.Error("missing DagRunId must map to nil")
 	}
-	if DagRun(&airflow.DAGRun{DagRunId: ptr("r")}) != nil {
+	if DagRun(&airflowv1.DAGRun{DagRunId: ptr("r")}) != nil {
 		t.Error("missing DagId must map to nil")
 	}
 }
@@ -78,10 +78,10 @@ func TestDagRun_FieldsAndUpdatedAt(t *testing.T) {
 
 	start := time.Date(2026, 8, 17, 10, 0, 0, 0, time.UTC)
 	end := start.Add(5 * time.Minute)
-	state := airflow.DagState("running")
-	rt := airflow.DAGRunRunType("manual")
+	state := airflowv1.DagState("running")
+	rt := airflowv1.DAGRunRunType("manual")
 
-	got := DagRun(&airflow.DAGRun{
+	got := DagRun(&airflowv1.DAGRun{
 		DagId:     ptr("d"),
 		DagRunId:  ptr("r1"),
 		State:     &state,
@@ -106,7 +106,7 @@ func TestDagRun_FieldsAndUpdatedAt(t *testing.T) {
 func TestDagRuns_SkipsInvalid(t *testing.T) {
 	t.Parallel()
 
-	got := DagRuns([]airflow.DAGRun{
+	got := DagRuns([]airflowv1.DAGRun{
 		{DagId: ptr("d1"), DagRunId: ptr("r1")},
 		{DagId: ptr("d2")}, // no run id — dropped
 		{DagId: ptr("d3"), DagRunId: ptr("r3")},
@@ -119,10 +119,10 @@ func TestDagRuns_SkipsInvalid(t *testing.T) {
 func TestPool(t *testing.T) {
 	t.Parallel()
 
-	if Pool(nil) != nil || Pool(&airflow.Pool{}) != nil {
+	if Pool(nil) != nil || Pool(&airflowv1.Pool{}) != nil {
 		t.Error("missing name must map to nil")
 	}
-	got := Pool(&airflow.Pool{
+	got := Pool(&airflowv1.Pool{
 		Name:          ptr("default"),
 		Slots:         ptr(10),
 		OccupiedSlots: ptr(3),
@@ -142,7 +142,7 @@ func TestImportError(t *testing.T) {
 	t.Parallel()
 
 	ts := "2026-08-17T18:00:00Z"
-	got := ImportError(&airflow.ImportError{
+	got := ImportError(&airflowv1.ImportError{
 		ImportErrorId: ptr(42),
 		Filename:      ptr("dags/bad.py"),
 		StackTrace:    ptr("Traceback..."),
@@ -161,7 +161,7 @@ func TestTaskInstance_DurationFallback(t *testing.T) {
 
 	start := "2026-08-17T10:00:00Z"
 	end := "2026-08-17T10:01:30Z"
-	got := TaskInstance(&airflow.TaskInstance{
+	got := TaskInstance(&airflowv1.TaskInstance{
 		DagId:     ptr("d"),
 		DagRunId:  ptr("r"),
 		TaskId:    ptr("t"),
@@ -180,8 +180,8 @@ func TestTaskInstance_DurationFallback(t *testing.T) {
 func TestTaskInstance_TypedState(t *testing.T) {
 	t.Parallel()
 
-	state := airflow.TaskState("upstream_failed")
-	got := TaskInstance(&airflow.TaskInstance{
+	state := airflowv1.TaskState("upstream_failed")
+	got := TaskInstance(&airflowv1.TaskInstance{
 		DagId: ptr("d"), DagRunId: ptr("r"), TaskId: ptr("t"), State: &state,
 	})
 	if got == nil {
@@ -195,8 +195,8 @@ func TestTaskInstance_TypedState(t *testing.T) {
 func TestTaskAttempts_SortedAscending(t *testing.T) {
 	t.Parallel()
 
-	state := airflow.TaskState("failed")
-	in := []airflow.TaskInstanceHistory{
+	state := airflowv1.TaskState("failed")
+	in := []airflowv1.TaskInstanceHistory{
 		{TryNumber: ptr(3), State: &state},
 		{TryNumber: ptr(1), State: &state},
 		{TryNumber: ptr(2), State: &state},
@@ -215,10 +215,10 @@ func TestTaskAttempts_SortedAscending(t *testing.T) {
 func TestAggregateWaiting_GroupsAndCounts(t *testing.T) {
 	t.Parallel()
 
-	states := []airflow.TaskState{"queued", "queued", "up_for_retry", "deferred", "running"}
-	items := make([]airflow.TaskInstance, len(states))
+	states := []airflowv1.TaskState{"queued", "queued", "up_for_retry", "deferred", "running"}
+	items := make([]airflowv1.TaskInstance, len(states))
 	for i := range states {
-		items[i] = airflow.TaskInstance{
+		items[i] = airflowv1.TaskInstance{
 			DagId: ptr("d"), DagRunId: ptr("r"), TaskId: ptr("t"), State: &states[i],
 		}
 	}
