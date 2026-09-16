@@ -1,7 +1,8 @@
 # Binaries
 /bin/
 /dist/
-afmetric
+# Anchor on root — an unanchored `afmetric` would swallow cmd/afmetric/ too.
+/afmetric
 
 # Go build artifacts
 *.exe
