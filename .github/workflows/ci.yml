@@ -44,9 +44,9 @@ jobs:
           cache: true
 
       # v9 requires golangci-lint v2 (our .golangci.yml is already v2-format)
-      # and runs on Node 24 (v6 used Node 20 → deprecation warning). Pin
-      # `version: v2` alias so we get the latest v2 release without
-      # unpredictable jumps into a hypothetical v3 later.
+      # and runs on Node 24 (v6 used Node 20 → deprecation warning). The
+      # action's version input rejects major-only aliases (`v2`); pin an
+      # exact release. Bump this line when a newer v2.x lands.
       - uses: golangci/golangci-lint-action@v9
         with:
-          version: v2
+          version: v2.13.2
