@@ -68,7 +68,9 @@ type Model struct {
 
 	// Log viewer state (screenTaskLogs).
 	logDagID, logRunID, logTaskID string
-	logTryNumber                  int // try_number of the log currently loaded
+	logTryNumber                  int             // try_number of the log currently loaded
+	logCurrentTry                 int             // TI.TryNumber at drill-entry — the *live* attempt, may still be growing
+	logCurrentState               model.TaskState // TI.State at drill-entry — used to seed attempts[current].State
 	logAttempts                   []model.TaskAttempt
 	logTryIdx                     int // index into logAttempts of the current try
 	logLoading                    bool
@@ -76,6 +78,14 @@ type Model struct {
 	logContent                    string
 	logOffset                     int // top line currently shown
 	logHeight                     int // viewport height, cached from window size
+	// Per-try log cache — keyed by try_number, populated on successful fetch
+	// of a *terminal* attempt (past retries) and wiped on drill-entry so
+	// switching tasks always sees fresh content. The live attempt
+	// (m.logCurrentTry) is intentionally never cached — its log grows over
+	// time and stale snapshots would silently hide new output. `[` / `]`
+	// toggle between already-loaded past attempts without another API round
+	// trip; the live attempt always refetches.
+	logCache map[int]string
 
 	// Log search state.
 	logSearchMode    bool   // true while user is typing a pattern (footer input)
@@ -143,11 +153,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case taskLogsLoadedMsg:
-		if msg.dagID == m.logDagID && msg.runID == m.logRunID && msg.taskID == m.logTaskID && msg.tryNumber == m.logTryNumber {
+		// Only apply if this reply matches the *currently-viewed* try in the
+		// log viewer. Cross-drill leaks, out-of-order refetches for the same
+		// try, and post-esc responses are all filtered out here.
+		if m.screen == screenTaskLogs &&
+			msg.dagID == m.logDagID && msg.runID == m.logRunID && msg.taskID == m.logTaskID &&
+			msg.tryNumber == m.logTryNumber {
+			parsed := parseAirflowLogContent(msg.content)
+			// Never cache the live attempt — its log grows and a stale
+			// snapshot would silently hide new output on the next `]` back.
+			// Past attempts are terminal, cache away.
+			if msg.tryNumber != m.logCurrentTry {
+				if m.logCache == nil {
+					m.logCache = make(map[int]string)
+				}
+				m.logCache[msg.tryNumber] = parsed
+			}
 			m.logLoading = false
-			// Unwrap [('host','...\\n...')] and expand escapes once, so that
-			// scroll math (clampLogOffset) and the panel see the same line count.
-			m.logContent = parseAirflowLogContent(msg.content)
+			m.logContent = parsed
 			m.logErr = ""
 			m.logOffset = 0
 			m.recomputeLogMatches()
@@ -155,24 +178,31 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case taskLogsErrMsg:
-		if msg.dagID == m.logDagID && msg.runID == m.logRunID && msg.taskID == m.logTaskID {
+		if m.screen == screenTaskLogs &&
+			msg.dagID == m.logDagID && msg.runID == m.logRunID && msg.taskID == m.logTaskID &&
+			msg.tryNumber == m.logTryNumber {
 			m.logLoading = false
 			m.logErr = msg.err.Error()
 		}
 		return m, nil
 
 	case taskTriesLoadedMsg:
-		if msg.dagID == m.logDagID && msg.runID == m.logRunID && msg.taskID == m.logTaskID {
-			m.logAttempts = msg.attempts
-			// Sync cursor to the try_number we're currently viewing.
-			m.logTryIdx = indexOfTry(msg.attempts, m.logTryNumber)
+		if m.screen == screenTaskLogs &&
+			msg.dagID == m.logDagID && msg.runID == m.logRunID && msg.taskID == m.logTaskID {
+			m.logAttempts = buildAttempts(m.logCurrentTry, m.logCurrentState, msg.attempts)
+			m.logTryIdx = indexOfTry(m.logAttempts, m.logTryNumber)
 		}
 		return m, nil
 
 	case taskTriesErrMsg:
-		// Silently degrade: without /tries we fall back to the single
-		// try_number provided by the task instance itself. Navigation with
-		// [ / ] becomes a no-op — nothing else breaks.
+		// /tries can be empty or unavailable depending on Airflow version and
+		// the task's history. That's fine — the log endpoint still serves each
+		// try by path, so we synthesise [1..currentTry] and let the user page.
+		if m.screen == screenTaskLogs &&
+			msg.dagID == m.logDagID && msg.runID == m.logRunID && msg.taskID == m.logTaskID {
+			m.logAttempts = buildAttempts(m.logCurrentTry, m.logCurrentState, nil)
+			m.logTryIdx = indexOfTry(m.logAttempts, m.logTryNumber)
+		}
 		return m, nil
 
 	case tea.KeyMsg:
@@ -221,16 +251,29 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.logRunID = ti.RunID
 			m.logTaskID = ti.TaskID
 			m.logTryNumber = ti.TryNumber
-			// Seed attempts with just the current try so the UI has *something*
-			// to display until /tries comes back. The tries response then
-			// replaces it.
-			m.logAttempts = []model.TaskAttempt{{TryNumber: ti.TryNumber, State: ti.State}}
+			m.logCurrentTry = ti.TryNumber
+			m.logCurrentState = ti.State
+			// Attempts stays nil until /tries answers. During the loading
+			// window renderTryCounter shows `(try N)` (total==0 branch) and
+			// switchTryIdx short-circuits on len<=1, so no page-through until
+			// we know the real range.
+			m.logAttempts = nil
 			m.logTryIdx = 0
-			m.logLoading = true
 			m.logContent = ""
 			m.logErr = ""
 			m.logOffset = 0
+			// Fresh drill — drop any per-try log cache from the previous task.
+			m.logCache = make(map[int]string)
 			m.clearLogSearch()
+			// Queued / never-run tasks report TryNumber == 0 and the /logs/0
+			// endpoint 404s. Skip the fetch and show a placeholder instead of
+			// pretending to load.
+			if ti.TryNumber < 1 {
+				m.logLoading = false
+				m.logContent = "(task has not run yet)"
+				return m, nil
+			}
+			m.logLoading = true
 			return m, tea.Batch(
 				fetchTaskLogsCmd(m.ctx, m.fetcher, ti.DagID, ti.RunID, ti.TaskID, ti.TryNumber),
 				fetchTaskTriesCmd(m.ctx, m.fetcher, ti.DagID, ti.RunID, ti.TaskID),
@@ -261,6 +304,9 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			if m.fetcher == nil {
 				return m, nil
 			}
+			// Evict the current try from cache so the refetch actually hits
+			// the API — running tasks can grow their log between navigations.
+			delete(m.logCache, m.logTryNumber)
 			m.logLoading = true
 			m.logErr = ""
 			return m, fetchTaskLogsCmd(m.ctx, m.fetcher, m.logDagID, m.logRunID, m.logTaskID, m.logTryNumber)
@@ -520,6 +566,11 @@ func (m Model) contentWidth() int {
 
 // switchTryIdx moves to another attempt by its position in logAttempts.
 // No-op on out-of-range or when the list contains a single item.
+//
+// Past attempts served from logCache are instant (no fetch, no loading
+// spinner). The live attempt (== m.logCurrentTry) is always refetched —
+// its log grows over time, so a cached snapshot would silently hide new
+// output. See the logCache field comment for the invariant.
 func (m Model) switchTryIdx(target int) (tea.Model, tea.Cmd) {
 	if m.fetcher == nil || len(m.logAttempts) <= 1 {
 		return m, nil
@@ -529,11 +580,19 @@ func (m Model) switchTryIdx(target int) (tea.Model, tea.Cmd) {
 	}
 	m.logTryIdx = target
 	m.logTryNumber = m.logAttempts[target].TryNumber
-	m.logLoading = true
-	m.logContent = ""
 	m.logErr = ""
 	m.logOffset = 0
 	m.clearLogSearch()
+	if m.logTryNumber != m.logCurrentTry {
+		if cached, ok := m.logCache[m.logTryNumber]; ok {
+			m.logLoading = false
+			m.logContent = cached
+			m.recomputeLogMatches()
+			return m, nil
+		}
+	}
+	m.logLoading = true
+	m.logContent = ""
 	return m, fetchTaskLogsCmd(m.ctx, m.fetcher, m.logDagID, m.logRunID, m.logTaskID, m.logTryNumber)
 }
 
@@ -546,6 +605,53 @@ func indexOfTry(attempts []model.TaskAttempt, tryNumber int) int {
 		}
 	}
 	return 0
+}
+
+// buildAttempts constructs the navigable attempt list for the log viewer.
+//
+// The log endpoint (/logs/{task_try_number}) serves *every* attempt by path
+// regardless of whether the /tries history table has a row for it, so we
+// synthesise the full [1..N] range and let /tries fill in state/timing.
+//
+// N is max(currentTry, max hist.TryNumber). Taking the maximum guards
+// against a retry that landed on the server between the TaskInstance fetch
+// and the /tries fetch — the row for the new attempt would otherwise be
+// silently dropped by a strict currentTry clamp.
+//
+// currentState is the live TI state at drill-entry — it wins over any
+// hist row for the current try, because TaskInstanceHistory snapshots
+// *pre-transition* state and TI is fresher.
+//
+// Returns nil for currentTry < 1 (queued / never-run task): no attempts to
+// paginate through, and switchTryIdx's len<=1 short-circuit keeps [ / ]
+// as a no-op.
+func buildAttempts(currentTry int, currentState model.TaskState, hist []model.TaskAttempt) []model.TaskAttempt {
+	effective := currentTry
+	for _, a := range hist {
+		if a.TryNumber > effective {
+			effective = a.TryNumber
+		}
+	}
+	if effective < 1 {
+		return nil
+	}
+	byNum := make(map[int]model.TaskAttempt, effective)
+	for i := 1; i <= effective; i++ {
+		byNum[i] = model.TaskAttempt{TryNumber: i}
+	}
+	for _, a := range hist {
+		if a.TryNumber >= 1 {
+			byNum[a.TryNumber] = a
+		}
+	}
+	if currentTry >= 1 {
+		byNum[currentTry] = model.TaskAttempt{TryNumber: currentTry, State: currentState}
+	}
+	out := make([]model.TaskAttempt, 0, effective)
+	for i := 1; i <= effective; i++ {
+		out = append(out, byNum[i])
+	}
+	return out
 }
 
 // clearLogSearch drops the active pattern and its match list. Called on esc

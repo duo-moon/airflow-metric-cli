@@ -8,7 +8,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/duo-moon/airflow-metric-cli/internal/model"
 	"github.com/duo-moon/airflow-metric-cli/internal/source/rest/airflowv2"
@@ -154,47 +156,151 @@ func (a *v2Adapter) TaskLogs(ctx context.Context, dagID, runID, taskID string, t
 		return "", fmt.Errorf("HTTP %d", resp.StatusCode())
 	}
 	if resp.JSON200 != nil {
-		if text := decodeV2LogContent(&resp.JSON200.Content); text != "" {
-			return text, nil
-		}
-	}
-	if len(resp.Body) > 0 {
-		return string(resp.Body), nil
+		// Empty union → empty string (mirrors v1 behaviour). Never leak the
+		// raw response body here — it's JSON and would be shown verbatim in
+		// the log viewer, which is worse than an "(empty log)" placeholder.
+		return decodeV2LogContent(&resp.JSON200.Content), nil
 	}
 	return "", fmt.Errorf("empty log response")
 }
 
 // decodeV2LogContent flattens the v2 log content union into a single string.
 // The REST v2 log endpoint returns either a list of structured messages
-// ({event, timestamp, ...}) or a plain []string; we join both variants with
-// newlines.
+// ({event, timestamp, level, ...}) or a plain []string; we join both
+// variants with newlines.
+//
+// Structured entries are rendered in the classic Airflow 2.x layout
+//
+//	TIMESTAMP LEVEL - message key=val ...
+//
+// so the UI's level-colorizer (which matches `(^|\s)LEVEL - `) picks them
+// up without a v3-specific code path. `level` (and `log_level` when it
+// stood in as the level source) are consumed into the header; remaining
+// structlog keys ride along as `key=val` tail.
 func decodeV2LogContent(u *airflowv2.TaskInstancesLogResponse_Content) string {
-	// Try structured messages first (the default JSON representation).
 	if structured, err := u.AsTaskInstancesLogResponseContent0(); err == nil && len(structured) > 0 {
 		var b strings.Builder
-		for i, m := range structured {
+		for i := range structured {
 			if i > 0 {
 				b.WriteByte('\n')
 			}
-			if m.Timestamp != nil {
-				b.WriteString(m.Timestamp.Format("2006-01-02T15:04:05Z"))
-				b.WriteByte(' ')
-			}
-			b.WriteString(m.Event)
-			for k, v := range m.AdditionalProperties {
-				if raw, err := json.Marshal(v); err == nil {
-					b.WriteString(" ")
-					b.WriteString(k)
-					b.WriteByte('=')
-					b.Write(raw)
-				}
-			}
+			b.WriteString(formatStructuredLogMessage(&structured[i]))
 		}
 		return b.String()
 	}
-	// Fall back to a plain string list.
 	if lines, err := u.AsTaskInstancesLogResponseContent1(); err == nil && len(lines) > 0 {
 		return strings.Join(lines, "\n")
 	}
 	return ""
+}
+
+// formatStructuredLogMessage renders one structlog entry as
+// `TIMESTAMP LEVEL - event key=val ...`. Level is always emitted (defaulting
+// to INFO) so the colorizer regex has an anchor even when the source entry
+// omits severity. Timestamps are normalised to UTC RFC3339; without one the
+// line starts with `LEVEL - ` and the colorizer's `^`-alternate matches.
+//
+// String values in extras are rendered bare (mirrors Airflow's classic
+// `key=value` style, so grep patterns like `task_id=extract` transfer);
+// non-strings are JSON-encoded. Extras keys are sorted alphabetically —
+// snapshot-test determinism trumps the loss of structlog's binding order,
+// which the batched JSON response often doesn't preserve anyway.
+func formatStructuredLogMessage(m *airflowv2.StructuredLogMessage) string {
+	var b strings.Builder
+	if m.Timestamp != nil {
+		b.WriteString(m.Timestamp.UTC().Format(time.RFC3339))
+		b.WriteByte(' ')
+	}
+	level, levelKey := structlogLevel(m.AdditionalProperties)
+	b.WriteString(level)
+	b.WriteString(" - ")
+	b.WriteString(m.Event)
+
+	extras := make([]string, 0, len(m.AdditionalProperties))
+	for k := range m.AdditionalProperties {
+		if k == levelKey {
+			continue
+		}
+		extras = append(extras, k)
+	}
+	sort.Strings(extras)
+	for _, k := range extras {
+		b.WriteByte(' ')
+		b.WriteString(k)
+		b.WriteByte('=')
+		b.WriteString(formatStructlogValue(m.AdditionalProperties[k]))
+	}
+	return b.String()
+}
+
+// structlogLevel returns the canonical uppercase level string extracted from
+// a structlog entry, plus the key it was drawn from ("" when no key was
+// consumed and the INFO fallback is used).
+//
+// Prefers `level` over `log_level`. If the picked key holds a string, it's
+// uppercased. If it holds a Python-logging numeric (int/float from JSON),
+// it's mapped by threshold (10=DEBUG..50=CRITICAL) so a value like 40 shows
+// as ERROR rather than being silently downgraded to INFO. Unrecognised
+// types fall through to the fallback and — importantly — do NOT consume the
+// key, so the raw value still surfaces in the extras tail.
+func structlogLevel(props map[string]interface{}) (level, key string) {
+	for _, k := range []string{"level", "log_level"} {
+		raw, ok := props[k]
+		if !ok {
+			continue
+		}
+		if lvl, ok := coerceStructlogLevel(raw); ok {
+			return lvl, k
+		}
+	}
+	return "INFO", ""
+}
+
+func coerceStructlogLevel(raw interface{}) (string, bool) {
+	switch v := raw.(type) {
+	case string:
+		if v == "" {
+			return "", false
+		}
+		return strings.ToUpper(v), true
+	case float64:
+		return numericLevel(int(v)), true
+	case int:
+		return numericLevel(v), true
+	}
+	return "", false
+}
+
+// numericLevel maps Python logging integer levels to Airflow's textual
+// severities using the same thresholds as the stdlib logger (DEBUG=10,
+// INFO=20, WARNING=30, ERROR=40, CRITICAL=50). Values in between land on
+// the next lower named level, matching what stdlib does when formatting.
+func numericLevel(n int) string {
+	switch {
+	case n >= 50:
+		return "CRITICAL"
+	case n >= 40:
+		return "ERROR"
+	case n >= 30:
+		return "WARNING"
+	case n >= 20:
+		return "INFO"
+	default:
+		return "DEBUG"
+	}
+}
+
+// formatStructlogValue renders one extras value: bare for strings (so
+// `task_id=extract` grep patterns work regardless of dialect), JSON for
+// everything else. Errors from json.Marshal collapse to an empty string —
+// callers already emitted the `key=` prefix, so worst case is `key=`.
+func formatStructlogValue(v interface{}) string {
+	if s, ok := v.(string); ok {
+		return s
+	}
+	raw, err := json.Marshal(v)
+	if err != nil {
+		return ""
+	}
+	return string(raw)
 }

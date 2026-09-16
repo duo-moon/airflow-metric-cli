@@ -11,29 +11,39 @@ import (
 // airflowLevelPattern matches an Airflow log line's level token:
 //
 //	[TS] {file.py:LN} INFO - msg
+//	LEVEL - msg                     (v3 structured entries without timestamp)
 //
-// Requires whitespace on both sides and the " - " suffix so we don't paint
-// the word "INFO" appearing inside a message body.
-var airflowLevelPattern = regexp.MustCompile(`(\s)(DEBUG|INFO|WARNING|WARN|ERROR|CRITICAL|FATAL)(\s+-\s)`)
+// Anchored on line start OR whitespace before the level and requires the
+// " - " suffix so we don't paint the word "INFO" appearing inside a message
+// body. Line-start alt covers v3 structlog entries where formatStructuredLogMessage
+// starts with `LEVEL - ` (no timestamp).
+var airflowLevelPattern = regexp.MustCompile(`(^|\s)(DEBUG|INFO|WARNING|WARN|ERROR|CRITICAL|FATAL)(\s+-\s)`)
 
 // airflowLogTuplePattern extracts the log body from Airflow's
 // `[('host', 'log text')]` Python-repr wrapper. Anchored to the comma so we
 // only capture the second element of each tuple (the body), not the host.
 var airflowLogTuplePattern = regexp.MustCompile(`(?s),\s*['"](.*?)['"]\s*\)`)
 
-// parseAirflowLogContent unpeels the Python-repr wrapper Airflow returns for
-// task logs, then converts literal \n / \t escapes into real characters so
-// the log renders line-by-line.
+// parseAirflowLogContent unpeels the Python-repr wrapper Airflow's v1 API
+// returns for task logs, then converts literal \n / \t escapes into real
+// characters so the log renders line-by-line.
+//
+// The escape expansion is scoped to the tuple-wrapped branch on purpose:
+// v3 structured logs come pre-decoded from decodeV2LogContent and may
+// contain real \n bytes inside string values (tracebacks, multiline
+// events). Running ReplaceAll on that content would corrupt any literal
+// \n that a JSON-marshalled value happened to include.
 func parseAirflowLogContent(s string) string {
-	if strings.HasPrefix(s, "[(") && strings.HasSuffix(s, ")]") {
-		matches := airflowLogTuplePattern.FindAllStringSubmatch(s, -1)
-		if len(matches) > 0 {
-			parts := make([]string, 0, len(matches))
-			for _, m := range matches {
-				parts = append(parts, m[1])
-			}
-			s = strings.Join(parts, "\n")
+	if !strings.HasPrefix(s, "[(") || !strings.HasSuffix(s, ")]") {
+		return s
+	}
+	matches := airflowLogTuplePattern.FindAllStringSubmatch(s, -1)
+	if len(matches) > 0 {
+		parts := make([]string, 0, len(matches))
+		for _, m := range matches {
+			parts = append(parts, m[1])
 		}
+		s = strings.Join(parts, "\n")
 	}
 	s = strings.ReplaceAll(s, `\n`, "\n")
 	s = strings.ReplaceAll(s, `\t`, "\t")

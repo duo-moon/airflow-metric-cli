@@ -2,6 +2,7 @@ package v1
 
 import "time"
 
+// deref returns *t or zero on nil.
 func deref(t *time.Time) time.Time {
 	if t == nil {
 		return time.Time{}
@@ -9,6 +10,7 @@ func deref(t *time.Time) time.Time {
 	return *t
 }
 
+// derefInt returns *i or 0 on nil.
 func derefInt(i *int) int {
 	if i == nil {
 		return 0
@@ -16,6 +18,7 @@ func derefInt(i *int) int {
 	return *i
 }
 
+// derefString returns *s or "" on nil.
 func derefString(s *string) string {
 	if s == nil {
 		return ""
@@ -38,6 +41,7 @@ func parseRFC3339(s *string) time.Time {
 	return t
 }
 
+// latest returns the max non-zero time from the arguments.
 func latest(ts ...time.Time) time.Time {
 	var out time.Time
 	for _, t := range ts {

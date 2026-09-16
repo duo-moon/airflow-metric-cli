@@ -51,6 +51,21 @@ func (e BulkActionOnExistence) Valid() bool {
 	}
 }
 
+// Defines values for BulkCreateActionBulkTaskInstanceBodyAction.
+const (
+	BulkCreateActionBulkTaskInstanceBodyActionCreate BulkCreateActionBulkTaskInstanceBodyAction = "create"
+)
+
+// Valid indicates whether the value is a known member of the BulkCreateActionBulkTaskInstanceBodyAction enum.
+func (e BulkCreateActionBulkTaskInstanceBodyAction) Valid() bool {
+	switch e {
+	case BulkCreateActionBulkTaskInstanceBodyActionCreate:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for BulkCreateActionConnectionBodyAction.
 const (
 	BulkCreateActionConnectionBodyActionCreate BulkCreateActionConnectionBodyAction = "create"
@@ -96,6 +111,21 @@ func (e BulkCreateActionVariableBodyAction) Valid() bool {
 	}
 }
 
+// Defines values for BulkDeleteActionBulkTaskInstanceBodyAction.
+const (
+	BulkDeleteActionBulkTaskInstanceBodyActionDelete BulkDeleteActionBulkTaskInstanceBodyAction = "delete"
+)
+
+// Valid indicates whether the value is a known member of the BulkDeleteActionBulkTaskInstanceBodyAction enum.
+func (e BulkDeleteActionBulkTaskInstanceBodyAction) Valid() bool {
+	switch e {
+	case BulkDeleteActionBulkTaskInstanceBodyActionDelete:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for BulkDeleteActionConnectionBodyAction.
 const (
 	BulkDeleteActionConnectionBodyActionDelete BulkDeleteActionConnectionBodyAction = "delete"
@@ -135,6 +165,21 @@ const (
 func (e BulkDeleteActionVariableBodyAction) Valid() bool {
 	switch e {
 	case BulkDeleteActionVariableBodyActionDelete:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BulkUpdateActionBulkTaskInstanceBodyAction.
+const (
+	BulkUpdateActionBulkTaskInstanceBodyActionUpdate BulkUpdateActionBulkTaskInstanceBodyAction = "update"
+)
+
+// Valid indicates whether the value is a known member of the BulkUpdateActionBulkTaskInstanceBodyAction enum.
+func (e BulkUpdateActionBulkTaskInstanceBodyAction) Valid() bool {
+	switch e {
+	case BulkUpdateActionBulkTaskInstanceBodyActionUpdate:
 		return true
 	default:
 		return false
@@ -269,15 +314,18 @@ func (e DagRunTriggeredByType) Valid() bool {
 
 // Defines values for DagRunType.
 const (
-	DagRunTypeAssetTriggered DagRunType = "asset_triggered"
-	DagRunTypeBackfill       DagRunType = "backfill"
-	DagRunTypeManual         DagRunType = "manual"
-	DagRunTypeScheduled      DagRunType = "scheduled"
+	DagRunTypeAssetMaterialization DagRunType = "asset_materialization"
+	DagRunTypeAssetTriggered       DagRunType = "asset_triggered"
+	DagRunTypeBackfill             DagRunType = "backfill"
+	DagRunTypeManual               DagRunType = "manual"
+	DagRunTypeScheduled            DagRunType = "scheduled"
 )
 
 // Valid indicates whether the value is a known member of the DagRunType enum.
 func (e DagRunType) Valid() bool {
 	switch e {
+	case DagRunTypeAssetMaterialization:
+		return true
 	case DagRunTypeAssetTriggered:
 		return true
 	case DagRunTypeBackfill:
@@ -293,8 +341,9 @@ func (e DagRunType) Valid() bool {
 
 // Defines values for DagWarningType.
 const (
-	AssetConflict   DagWarningType = "asset conflict"
-	NonExistentPool DagWarningType = "non-existent pool"
+	AssetConflict       DagWarningType = "asset conflict"
+	NonExistentPool     DagWarningType = "non-existent pool"
+	RuntimeVaryingValue DagWarningType = "runtime varying value"
 )
 
 // Valid indicates whether the value is a known member of the DagWarningType enum.
@@ -303,6 +352,71 @@ func (e DagWarningType) Valid() bool {
 	case AssetConflict:
 		return true
 	case NonExistentPool:
+		return true
+	case RuntimeVaryingValue:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ExternalViewResponseDestination.
+const (
+	ExternalViewResponseDestinationBase         ExternalViewResponseDestination = "base"
+	ExternalViewResponseDestinationDag          ExternalViewResponseDestination = "dag"
+	ExternalViewResponseDestinationDagRun       ExternalViewResponseDestination = "dag_run"
+	ExternalViewResponseDestinationNav          ExternalViewResponseDestination = "nav"
+	ExternalViewResponseDestinationTask         ExternalViewResponseDestination = "task"
+	ExternalViewResponseDestinationTaskInstance ExternalViewResponseDestination = "task_instance"
+)
+
+// Valid indicates whether the value is a known member of the ExternalViewResponseDestination enum.
+func (e ExternalViewResponseDestination) Valid() bool {
+	switch e {
+	case ExternalViewResponseDestinationBase:
+		return true
+	case ExternalViewResponseDestinationDag:
+		return true
+	case ExternalViewResponseDestinationDagRun:
+		return true
+	case ExternalViewResponseDestinationNav:
+		return true
+	case ExternalViewResponseDestinationTask:
+		return true
+	case ExternalViewResponseDestinationTaskInstance:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ReactAppResponseDestination.
+const (
+	ReactAppResponseDestinationBase         ReactAppResponseDestination = "base"
+	ReactAppResponseDestinationDag          ReactAppResponseDestination = "dag"
+	ReactAppResponseDestinationDagRun       ReactAppResponseDestination = "dag_run"
+	ReactAppResponseDestinationDashboard    ReactAppResponseDestination = "dashboard"
+	ReactAppResponseDestinationNav          ReactAppResponseDestination = "nav"
+	ReactAppResponseDestinationTask         ReactAppResponseDestination = "task"
+	ReactAppResponseDestinationTaskInstance ReactAppResponseDestination = "task_instance"
+)
+
+// Valid indicates whether the value is a known member of the ReactAppResponseDestination enum.
+func (e ReactAppResponseDestination) Valid() bool {
+	switch e {
+	case ReactAppResponseDestinationBase:
+		return true
+	case ReactAppResponseDestinationDag:
+		return true
+	case ReactAppResponseDestinationDagRun:
+		return true
+	case ReactAppResponseDestinationDashboard:
+		return true
+	case ReactAppResponseDestinationNav:
+		return true
+	case ReactAppResponseDestinationTask:
+		return true
+	case ReactAppResponseDestinationTaskInstance:
 		return true
 	default:
 		return false
@@ -546,7 +660,7 @@ func (e GetLogParamsAccept) Valid() bool {
 // AppBuilderMenuItemResponse Serializer for AppBuilder Menu Item responses.
 type AppBuilderMenuItemResponse struct {
 	Category             *string                `json:"category,omitempty"`
-	Href                 *string                `json:"href,omitempty"`
+	Href                 string                 `json:"href"`
 	Name                 string                 `json:"name"`
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
@@ -587,32 +701,43 @@ type AssetEventCollectionResponse struct {
 
 // AssetEventResponse Asset event serializer for responses.
 type AssetEventResponse struct {
-	AssetId        int                     `json:"asset_id"`
-	CreatedDagruns []DagRunAssetReference  `json:"created_dagruns"`
-	Extra          *map[string]interface{} `json:"extra,omitempty"`
-	Group          *string                 `json:"group,omitempty"`
-	Id             int                     `json:"id"`
-	Name           *string                 `json:"name,omitempty"`
-	SourceDagId    *string                 `json:"source_dag_id,omitempty"`
-	SourceMapIndex int                     `json:"source_map_index"`
-	SourceRunId    *string                 `json:"source_run_id,omitempty"`
-	SourceTaskId   *string                 `json:"source_task_id,omitempty"`
-	Timestamp      time.Time               `json:"timestamp"`
-	Uri            *string                 `json:"uri,omitempty"`
+	AssetId        int                    `json:"asset_id"`
+	CreatedDagruns []DagRunAssetReference `json:"created_dagruns"`
+	Extra          *map[string]JsonValue  `json:"extra,omitempty"`
+	Group          *string                `json:"group,omitempty"`
+	Id             int                    `json:"id"`
+	Name           *string                `json:"name,omitempty"`
+	PartitionKey   *string                `json:"partition_key,omitempty"`
+	SourceDagId    *string                `json:"source_dag_id,omitempty"`
+	SourceMapIndex int                    `json:"source_map_index"`
+	SourceRunId    *string                `json:"source_run_id,omitempty"`
+	SourceTaskId   *string                `json:"source_task_id,omitempty"`
+	Timestamp      time.Time              `json:"timestamp"`
+	Uri            *string                `json:"uri,omitempty"`
 }
 
 // AssetResponse Asset serializer for responses.
 type AssetResponse struct {
 	Aliases        []AssetAliasResponse        `json:"aliases"`
-	ConsumingDags  []DagScheduleAssetReference `json:"consuming_dags"`
+	ConsumingTasks []TaskInletAssetReference   `json:"consuming_tasks"`
 	CreatedAt      time.Time                   `json:"created_at"`
-	Extra          *map[string]interface{}     `json:"extra,omitempty"`
+	Extra          *map[string]JsonValue       `json:"extra,omitempty"`
 	Group          string                      `json:"group"`
 	Id             int                         `json:"id"`
+	LastAssetEvent *LastAssetEventResponse     `json:"last_asset_event,omitempty"`
 	Name           string                      `json:"name"`
 	ProducingTasks []TaskOutletAssetReference  `json:"producing_tasks"`
+	ScheduledDags  []DagScheduleAssetReference `json:"scheduled_dags"`
 	UpdatedAt      time.Time                   `json:"updated_at"`
 	Uri            string                      `json:"uri"`
+	Watchers       []AssetWatcherResponse      `json:"watchers"`
+}
+
+// AssetWatcherResponse Asset watcher serializer for responses.
+type AssetWatcherResponse struct {
+	CreatedDate time.Time `json:"created_date"`
+	Name        string    `json:"name"`
+	TriggerId   int       `json:"trigger_id"`
 }
 
 // BackfillCollectionResponse Backfill Collection serializer for responses.
@@ -631,21 +756,23 @@ type BackfillPostBody struct {
 	// ReprocessBehavior Internal enum for setting reprocess behavior in a backfill.
 	//
 	// :meta private:
-	ReprocessBehavior *ReprocessBehavior `json:"reprocess_behavior,omitempty"`
-	RunBackwards      *bool              `json:"run_backwards,omitempty"`
-	ToDate            time.Time          `json:"to_date"`
+	ReprocessBehavior  *ReprocessBehavior `json:"reprocess_behavior,omitempty"`
+	RunBackwards       *bool              `json:"run_backwards,omitempty"`
+	RunOnLatestVersion *bool              `json:"run_on_latest_version,omitempty"`
+	ToDate             time.Time          `json:"to_date"`
 }
 
 // BackfillResponse Base serializer for Backfill.
 type BackfillResponse struct {
-	CompletedAt   *time.Time             `json:"completed_at"`
-	CreatedAt     time.Time              `json:"created_at"`
-	DagId         string                 `json:"dag_id"`
-	DagRunConf    map[string]interface{} `json:"dag_run_conf"`
-	FromDate      time.Time              `json:"from_date"`
-	Id            int                    `json:"id"`
-	IsPaused      bool                   `json:"is_paused"`
-	MaxActiveRuns int                    `json:"max_active_runs"`
+	CompletedAt    *time.Time              `json:"completed_at"`
+	CreatedAt      time.Time               `json:"created_at"`
+	DagDisplayName string                  `json:"dag_display_name"`
+	DagId          string                  `json:"dag_id"`
+	DagRunConf     *map[string]interface{} `json:"dag_run_conf"`
+	FromDate       time.Time               `json:"from_date"`
+	Id             int                     `json:"id"`
+	IsPaused       bool                    `json:"is_paused"`
+	MaxActiveRuns  int                     `json:"max_active_runs"`
 
 	// ReprocessBehavior Internal enum for setting reprocess behavior in a backfill.
 	//
@@ -679,6 +806,16 @@ type BulkActionResponse struct {
 	Success *[]string `json:"success,omitempty"`
 }
 
+// BulkBodyBulkTaskInstanceBody defines model for BulkBody_BulkTaskInstanceBody_.
+type BulkBodyBulkTaskInstanceBody struct {
+	Actions []BulkBodyBulkTaskInstanceBody_Actions_Item `json:"actions"`
+}
+
+// BulkBodyBulkTaskInstanceBody_Actions_Item defines model for BulkBody_BulkTaskInstanceBody_.actions.Item.
+type BulkBodyBulkTaskInstanceBody_Actions_Item struct {
+	union json.RawMessage
+}
+
 // BulkBodyConnectionBody defines model for BulkBody_ConnectionBody_.
 type BulkBodyConnectionBody struct {
 	Actions []BulkBodyConnectionBody_Actions_Item `json:"actions"`
@@ -708,6 +845,21 @@ type BulkBodyVariableBody struct {
 type BulkBodyVariableBody_Actions_Item struct {
 	union json.RawMessage
 }
+
+// BulkCreateActionBulkTaskInstanceBody defines model for BulkCreateAction_BulkTaskInstanceBody_.
+type BulkCreateActionBulkTaskInstanceBody struct {
+	// Action The action to be performed on the entities.
+	Action BulkCreateActionBulkTaskInstanceBodyAction `json:"action"`
+
+	// ActionOnExistence Bulk Action to be taken if the entity already exists or not.
+	ActionOnExistence *BulkActionOnExistence `json:"action_on_existence,omitempty"`
+
+	// Entities A list of entities to be created.
+	Entities []BulkTaskInstanceBody `json:"entities"`
+}
+
+// BulkCreateActionBulkTaskInstanceBodyAction The action to be performed on the entities.
+type BulkCreateActionBulkTaskInstanceBodyAction string
 
 // BulkCreateActionConnectionBody defines model for BulkCreateAction_ConnectionBody_.
 type BulkCreateActionConnectionBody struct {
@@ -754,6 +906,29 @@ type BulkCreateActionVariableBody struct {
 // BulkCreateActionVariableBodyAction The action to be performed on the entities.
 type BulkCreateActionVariableBodyAction string
 
+// BulkDeleteActionBulkTaskInstanceBody defines model for BulkDeleteAction_BulkTaskInstanceBody_.
+type BulkDeleteActionBulkTaskInstanceBody struct {
+	// Action The action to be performed on the entities.
+	Action BulkDeleteActionBulkTaskInstanceBodyAction `json:"action"`
+
+	// ActionOnNonExistence Bulk Action to be taken if the entity does not exist.
+	ActionOnNonExistence *BulkActionNotOnExistence `json:"action_on_non_existence,omitempty"`
+
+	// Entities A list of entity id/key or entity objects to be deleted.
+	Entities []BulkDeleteActionBulkTaskInstanceBody_Entities_Item `json:"entities"`
+}
+
+// BulkDeleteActionBulkTaskInstanceBodyAction The action to be performed on the entities.
+type BulkDeleteActionBulkTaskInstanceBodyAction string
+
+// BulkDeleteActionBulkTaskInstanceBodyEntities0 defines model for BulkDeleteActionBulkTaskInstanceBody.Entities.0.
+type BulkDeleteActionBulkTaskInstanceBodyEntities0 = string
+
+// BulkDeleteActionBulkTaskInstanceBody_Entities_Item defines model for BulkDeleteAction_BulkTaskInstanceBody_.entities.Item.
+type BulkDeleteActionBulkTaskInstanceBody_Entities_Item struct {
+	union json.RawMessage
+}
+
 // BulkDeleteActionConnectionBody defines model for BulkDeleteAction_ConnectionBody_.
 type BulkDeleteActionConnectionBody struct {
 	// Action The action to be performed on the entities.
@@ -762,12 +937,20 @@ type BulkDeleteActionConnectionBody struct {
 	// ActionOnNonExistence Bulk Action to be taken if the entity does not exist.
 	ActionOnNonExistence *BulkActionNotOnExistence `json:"action_on_non_existence,omitempty"`
 
-	// Entities A list of entity id/key to be deleted.
-	Entities []string `json:"entities"`
+	// Entities A list of entity id/key or entity objects to be deleted.
+	Entities []BulkDeleteActionConnectionBody_Entities_Item `json:"entities"`
 }
 
 // BulkDeleteActionConnectionBodyAction The action to be performed on the entities.
 type BulkDeleteActionConnectionBodyAction string
+
+// BulkDeleteActionConnectionBodyEntities0 defines model for BulkDeleteActionConnectionBody.Entities.0.
+type BulkDeleteActionConnectionBodyEntities0 = string
+
+// BulkDeleteActionConnectionBody_Entities_Item defines model for BulkDeleteAction_ConnectionBody_.entities.Item.
+type BulkDeleteActionConnectionBody_Entities_Item struct {
+	union json.RawMessage
+}
 
 // BulkDeleteActionPoolBody defines model for BulkDeleteAction_PoolBody_.
 type BulkDeleteActionPoolBody struct {
@@ -777,12 +960,20 @@ type BulkDeleteActionPoolBody struct {
 	// ActionOnNonExistence Bulk Action to be taken if the entity does not exist.
 	ActionOnNonExistence *BulkActionNotOnExistence `json:"action_on_non_existence,omitempty"`
 
-	// Entities A list of entity id/key to be deleted.
-	Entities []string `json:"entities"`
+	// Entities A list of entity id/key or entity objects to be deleted.
+	Entities []BulkDeleteActionPoolBody_Entities_Item `json:"entities"`
 }
 
 // BulkDeleteActionPoolBodyAction The action to be performed on the entities.
 type BulkDeleteActionPoolBodyAction string
+
+// BulkDeleteActionPoolBodyEntities0 defines model for BulkDeleteActionPoolBody.Entities.0.
+type BulkDeleteActionPoolBodyEntities0 = string
+
+// BulkDeleteActionPoolBody_Entities_Item defines model for BulkDeleteAction_PoolBody_.entities.Item.
+type BulkDeleteActionPoolBody_Entities_Item struct {
+	union json.RawMessage
+}
 
 // BulkDeleteActionVariableBody defines model for BulkDeleteAction_VariableBody_.
 type BulkDeleteActionVariableBody struct {
@@ -792,12 +983,20 @@ type BulkDeleteActionVariableBody struct {
 	// ActionOnNonExistence Bulk Action to be taken if the entity does not exist.
 	ActionOnNonExistence *BulkActionNotOnExistence `json:"action_on_non_existence,omitempty"`
 
-	// Entities A list of entity id/key to be deleted.
-	Entities []string `json:"entities"`
+	// Entities A list of entity id/key or entity objects to be deleted.
+	Entities []BulkDeleteActionVariableBody_Entities_Item `json:"entities"`
 }
 
 // BulkDeleteActionVariableBodyAction The action to be performed on the entities.
 type BulkDeleteActionVariableBodyAction string
+
+// BulkDeleteActionVariableBodyEntities0 defines model for BulkDeleteActionVariableBody.Entities.0.
+type BulkDeleteActionVariableBodyEntities0 = string
+
+// BulkDeleteActionVariableBody_Entities_Item defines model for BulkDeleteAction_VariableBody_.entities.Item.
+type BulkDeleteActionVariableBody_Entities_Item struct {
+	union json.RawMessage
+}
 
 // BulkResponse Serializer for responses to bulk entity operations.
 //
@@ -815,6 +1014,38 @@ type BulkResponse struct {
 	Update *BulkActionResponse `json:"update,omitempty"`
 }
 
+// BulkTaskInstanceBody Request body for bulk update, and delete task instances.
+type BulkTaskInstanceBody struct {
+	DagId             *string            `json:"dag_id,omitempty"`
+	DagRunId          *string            `json:"dag_run_id,omitempty"`
+	IncludeDownstream *bool              `json:"include_downstream,omitempty"`
+	IncludeFuture     *bool              `json:"include_future,omitempty"`
+	IncludePast       *bool              `json:"include_past,omitempty"`
+	IncludeUpstream   *bool              `json:"include_upstream,omitempty"`
+	MapIndex          *int               `json:"map_index,omitempty"`
+	NewState          *TaskInstanceState `json:"new_state,omitempty"`
+	Note              *string            `json:"note,omitempty"`
+	TaskId            string             `json:"task_id"`
+}
+
+// BulkUpdateActionBulkTaskInstanceBody defines model for BulkUpdateAction_BulkTaskInstanceBody_.
+type BulkUpdateActionBulkTaskInstanceBody struct {
+	// Action The action to be performed on the entities.
+	Action BulkUpdateActionBulkTaskInstanceBodyAction `json:"action"`
+
+	// ActionOnNonExistence Bulk Action to be taken if the entity does not exist.
+	ActionOnNonExistence *BulkActionNotOnExistence `json:"action_on_non_existence,omitempty"`
+
+	// Entities A list of entities to be updated.
+	Entities []BulkTaskInstanceBody `json:"entities"`
+
+	// UpdateMask A list of field names to update for each entity.Only these fields will be applied from the request body to the database model.Any extra fields provided will be ignored.
+	UpdateMask *[]string `json:"update_mask,omitempty"`
+}
+
+// BulkUpdateActionBulkTaskInstanceBodyAction The action to be performed on the entities.
+type BulkUpdateActionBulkTaskInstanceBodyAction string
+
 // BulkUpdateActionConnectionBody defines model for BulkUpdateAction_ConnectionBody_.
 type BulkUpdateActionConnectionBody struct {
 	// Action The action to be performed on the entities.
@@ -825,6 +1056,9 @@ type BulkUpdateActionConnectionBody struct {
 
 	// Entities A list of entities to be updated.
 	Entities []ConnectionBody `json:"entities"`
+
+	// UpdateMask A list of field names to update for each entity.Only these fields will be applied from the request body to the database model.Any extra fields provided will be ignored.
+	UpdateMask *[]string `json:"update_mask,omitempty"`
 }
 
 // BulkUpdateActionConnectionBodyAction The action to be performed on the entities.
@@ -840,6 +1074,9 @@ type BulkUpdateActionPoolBody struct {
 
 	// Entities A list of entities to be updated.
 	Entities []PoolBody `json:"entities"`
+
+	// UpdateMask A list of field names to update for each entity.Only these fields will be applied from the request body to the database model.Any extra fields provided will be ignored.
+	UpdateMask *[]string `json:"update_mask,omitempty"`
 }
 
 // BulkUpdateActionPoolBodyAction The action to be performed on the entities.
@@ -855,6 +1092,9 @@ type BulkUpdateActionVariableBody struct {
 
 	// Entities A list of entities to be updated.
 	Entities []VariableBody `json:"entities"`
+
+	// UpdateMask A list of field names to update for each entity.Only these fields will be applied from the request body to the database model.Any extra fields provided will be ignored.
+	UpdateMask *[]string `json:"update_mask,omitempty"`
 }
 
 // BulkUpdateActionVariableBodyAction The action to be performed on the entities.
@@ -862,18 +1102,24 @@ type BulkUpdateActionVariableBodyAction string
 
 // ClearTaskInstancesBody Request body for Clear Task Instances endpoint.
 type ClearTaskInstancesBody struct {
-	DagRunId          *string                                `json:"dag_run_id,omitempty"`
-	DryRun            *bool                                  `json:"dry_run,omitempty"`
-	EndDate           *time.Time                             `json:"end_date,omitempty"`
-	IncludeDownstream *bool                                  `json:"include_downstream,omitempty"`
-	IncludeFuture     *bool                                  `json:"include_future,omitempty"`
-	IncludePast       *bool                                  `json:"include_past,omitempty"`
-	IncludeUpstream   *bool                                  `json:"include_upstream,omitempty"`
-	OnlyFailed        *bool                                  `json:"only_failed,omitempty"`
-	OnlyRunning       *bool                                  `json:"only_running,omitempty"`
-	ResetDagRuns      *bool                                  `json:"reset_dag_runs,omitempty"`
-	StartDate         *time.Time                             `json:"start_date,omitempty"`
-	TaskIds           *[]ClearTaskInstancesBody_TaskIds_Item `json:"task_ids,omitempty"`
+	DagRunId           *string    `json:"dag_run_id,omitempty"`
+	DryRun             *bool      `json:"dry_run,omitempty"`
+	EndDate            *time.Time `json:"end_date,omitempty"`
+	IncludeDownstream  *bool      `json:"include_downstream,omitempty"`
+	IncludeFuture      *bool      `json:"include_future,omitempty"`
+	IncludePast        *bool      `json:"include_past,omitempty"`
+	IncludeUpstream    *bool      `json:"include_upstream,omitempty"`
+	OnlyFailed         *bool      `json:"only_failed,omitempty"`
+	OnlyRunning        *bool      `json:"only_running,omitempty"`
+	PreventRunningTask *bool      `json:"prevent_running_task,omitempty"`
+	ResetDagRuns       *bool      `json:"reset_dag_runs,omitempty"`
+
+	// RunOnLatestVersion (Experimental) Run on the latest bundle version of the dag after clearing the task instances.
+	RunOnLatestVersion *bool      `json:"run_on_latest_version,omitempty"`
+	StartDate          *time.Time `json:"start_date,omitempty"`
+
+	// TaskIds A list of `task_id` or [`task_id`, `map_index`]. If only the `task_id` is provided for a mapped task, all of its map indices will be targeted.
+	TaskIds *[]ClearTaskInstancesBody_TaskIds_Item `json:"task_ids,omitempty"`
 }
 
 // ClearTaskInstancesBodyTaskIds0 defines model for ClearTaskInstancesBody.TaskIds.0.
@@ -926,6 +1172,7 @@ type ConnectionBody struct {
 	Password     *string `json:"password,omitempty"`
 	Port         *int    `json:"port,omitempty"`
 	Schema       *string `json:"schema,omitempty"`
+	TeamName     *string `json:"team_name,omitempty"`
 }
 
 // ConnectionCollectionResponse Connection Collection serializer for responses.
@@ -945,6 +1192,7 @@ type ConnectionResponse struct {
 	Password     *string `json:"password"`
 	Port         *int    `json:"port"`
 	Schema       *string `json:"schema"`
+	TeamName     *string `json:"team_name"`
 }
 
 // ConnectionTestResponse Connection Test serializer for responses.
@@ -955,8 +1203,9 @@ type ConnectionTestResponse struct {
 
 // CreateAssetEventsBody Create asset events request.
 type CreateAssetEventsBody struct {
-	AssetId int                     `json:"asset_id"`
-	Extra   *map[string]interface{} `json:"extra,omitempty"`
+	AssetId      int                     `json:"asset_id"`
+	Extra        *map[string]interface{} `json:"extra,omitempty"`
+	PartitionKey *string                 `json:"partition_key,omitempty"`
 }
 
 // DAGCollectionResponse DAG Collection serializer for responses.
@@ -967,16 +1216,22 @@ type DAGCollectionResponse struct {
 
 // DAGDetailsResponse Specific serializer for DAG Details responses.
 type DAGDetailsResponse struct {
+	ActiveRunsCount *int                    `json:"active_runs_count,omitempty"`
+	AllowedRunTypes *[]DagRunType           `json:"allowed_run_types"`
 	AssetExpression *map[string]interface{} `json:"asset_expression"`
 	BundleName      *string                 `json:"bundle_name"`
 	BundleVersion   *string                 `json:"bundle_version"`
 	Catchup         bool                    `json:"catchup"`
 
 	// Concurrency Return max_active_tasks as concurrency.
+	//
+	// Deprecated: Use max_active_tasks instead.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	Concurrency    *int                    `json:"concurrency,omitempty"`
 	DagDisplayName string                  `json:"dag_display_name"`
 	DagId          string                  `json:"dag_id"`
 	DagRunTimeout  *openapi_types.Duration `json:"dag_run_timeout"`
+	DefaultArgs    *map[string]interface{} `json:"default_args"`
 	Description    *string                 `json:"description"`
 	DocMd          *string                 `json:"doc_md"`
 	EndDate        *time.Time              `json:"end_date"`
@@ -986,10 +1241,12 @@ type DAGDetailsResponse struct {
 	Fileloc                  string     `json:"fileloc"`
 	HasImportErrors          bool       `json:"has_import_errors"`
 	HasTaskConcurrencyLimits bool       `json:"has_task_concurrency_limits"`
+	IsFavorite               *bool      `json:"is_favorite,omitempty"`
 	IsPaused                 bool       `json:"is_paused"`
 	IsPausedUponCreation     *bool      `json:"is_paused_upon_creation"`
 	IsStale                  bool       `json:"is_stale"`
 	LastExpired              *time.Time `json:"last_expired"`
+	LastParseDuration        *float32   `json:"last_parse_duration"`
 	LastParsed               *time.Time `json:"last_parsed"`
 	LastParsedTime           *time.Time `json:"last_parsed_time"`
 
@@ -1011,6 +1268,7 @@ type DAGDetailsResponse struct {
 	Tags                        []DagTagResponse        `json:"tags"`
 	TemplateSearchPath          *[]string               `json:"template_search_path"`
 	TimetableDescription        *string                 `json:"timetable_description"`
+	TimetablePartitioned        bool                    `json:"timetable_partitioned"`
 	TimetableSummary            *string                 `json:"timetable_summary"`
 	Timezone                    *string                 `json:"timezone"`
 }
@@ -1022,11 +1280,12 @@ type DAGPatchBody struct {
 
 // DAGResponse DAG serializer for responses.
 type DAGResponse struct {
-	BundleName     *string `json:"bundle_name"`
-	BundleVersion  *string `json:"bundle_version"`
-	DagDisplayName string  `json:"dag_display_name"`
-	DagId          string  `json:"dag_id"`
-	Description    *string `json:"description"`
+	AllowedRunTypes *[]DagRunType `json:"allowed_run_types"`
+	BundleName      *string       `json:"bundle_name"`
+	BundleVersion   *string       `json:"bundle_version"`
+	DagDisplayName  string        `json:"dag_display_name"`
+	DagId           string        `json:"dag_id"`
+	Description     *string       `json:"description"`
 
 	// FileToken Return file token.
 	FileToken                   *string          `json:"file_token,omitempty"`
@@ -1036,6 +1295,7 @@ type DAGResponse struct {
 	IsPaused                    bool             `json:"is_paused"`
 	IsStale                     bool             `json:"is_stale"`
 	LastExpired                 *time.Time       `json:"last_expired"`
+	LastParseDuration           *float32         `json:"last_parse_duration"`
 	LastParsedTime              *time.Time       `json:"last_parsed_time"`
 	MaxActiveRuns               *int             `json:"max_active_runs"`
 	MaxActiveTasks              int              `json:"max_active_tasks"`
@@ -1048,6 +1308,7 @@ type DAGResponse struct {
 	RelativeFileloc             *string          `json:"relative_fileloc"`
 	Tags                        []DagTagResponse `json:"tags"`
 	TimetableDescription        *string          `json:"timetable_description"`
+	TimetablePartitioned        bool             `json:"timetable_partitioned"`
 	TimetableSummary            *string          `json:"timetable_summary"`
 }
 
@@ -1055,6 +1316,9 @@ type DAGResponse struct {
 type DAGRunClearBody struct {
 	DryRun     *bool `json:"dry_run,omitempty"`
 	OnlyFailed *bool `json:"only_failed,omitempty"`
+
+	// RunOnLatestVersion (Experimental) Run on the latest bundle version of the Dag after clearing the Dag Run.
+	RunOnLatestVersion *bool `json:"run_on_latest_version,omitempty"`
 }
 
 // DAGRunCollectionResponse DAG Run Collection serializer for responses.
@@ -1076,15 +1340,18 @@ type DAGRunPatchStates string
 type DAGRunResponse struct {
 	BundleVersion          *string                 `json:"bundle_version"`
 	Conf                   *map[string]interface{} `json:"conf"`
+	DagDisplayName         string                  `json:"dag_display_name"`
 	DagId                  string                  `json:"dag_id"`
 	DagRunId               string                  `json:"dag_run_id"`
 	DagVersions            []DagVersionResponse    `json:"dag_versions"`
 	DataIntervalEnd        *time.Time              `json:"data_interval_end"`
 	DataIntervalStart      *time.Time              `json:"data_interval_start"`
+	Duration               *float32                `json:"duration"`
 	EndDate                *time.Time              `json:"end_date"`
 	LastSchedulingDecision *time.Time              `json:"last_scheduling_decision"`
 	LogicalDate            *time.Time              `json:"logical_date"`
 	Note                   *string                 `json:"note"`
+	PartitionKey           *string                 `json:"partition_key"`
 	QueuedAt               *time.Time              `json:"queued_at"`
 	RunAfter               time.Time               `json:"run_after"`
 
@@ -1097,32 +1364,47 @@ type DAGRunResponse struct {
 	// These are "shared" with TaskInstanceState in some parts of the code,
 	// so please ensure that their values always match the ones with the
 	// same name in TaskInstanceState.
-	State       DagRunState            `json:"state"`
-	TriggeredBy *DagRunTriggeredByType `json:"triggered_by"`
+	State              DagRunState            `json:"state"`
+	TriggeredBy        *DagRunTriggeredByType `json:"triggered_by"`
+	TriggeringUserName *string                `json:"triggering_user_name"`
 }
 
 // DAGRunsBatchBody List DAG Runs body for batch endpoint.
 type DAGRunsBatchBody struct {
+	ConfContains   *string         `json:"conf_contains,omitempty"`
 	DagIds         *[]string       `json:"dag_ids,omitempty"`
+	DurationGt     *float32        `json:"duration_gt,omitempty"`
+	DurationGte    *float32        `json:"duration_gte,omitempty"`
+	DurationLt     *float32        `json:"duration_lt,omitempty"`
+	DurationLte    *float32        `json:"duration_lte,omitempty"`
+	EndDateGt      *time.Time      `json:"end_date_gt,omitempty"`
 	EndDateGte     *time.Time      `json:"end_date_gte,omitempty"`
+	EndDateLt      *time.Time      `json:"end_date_lt,omitempty"`
 	EndDateLte     *time.Time      `json:"end_date_lte,omitempty"`
+	LogicalDateGt  *time.Time      `json:"logical_date_gt,omitempty"`
 	LogicalDateGte *time.Time      `json:"logical_date_gte,omitempty"`
+	LogicalDateLt  *time.Time      `json:"logical_date_lt,omitempty"`
 	LogicalDateLte *time.Time      `json:"logical_date_lte,omitempty"`
 	OrderBy        *string         `json:"order_by,omitempty"`
 	PageLimit      *int            `json:"page_limit,omitempty"`
 	PageOffset     *int            `json:"page_offset,omitempty"`
+	RunAfterGt     *time.Time      `json:"run_after_gt,omitempty"`
 	RunAfterGte    *time.Time      `json:"run_after_gte,omitempty"`
+	RunAfterLt     *time.Time      `json:"run_after_lt,omitempty"`
 	RunAfterLte    *time.Time      `json:"run_after_lte,omitempty"`
+	StartDateGt    *time.Time      `json:"start_date_gt,omitempty"`
 	StartDateGte   *time.Time      `json:"start_date_gte,omitempty"`
+	StartDateLt    *time.Time      `json:"start_date_lt,omitempty"`
 	StartDateLte   *time.Time      `json:"start_date_lte,omitempty"`
 	States         *[]*DagRunState `json:"states,omitempty"`
 }
 
 // DAGSourceResponse DAG Source serializer for responses.
 type DAGSourceResponse struct {
-	Content       *string `json:"content"`
-	DagId         string  `json:"dag_id"`
-	VersionNumber *int    `json:"version_number"`
+	Content        *string `json:"content"`
+	DagDisplayName string  `json:"dag_display_name"`
+	DagId          string  `json:"dag_id"`
+	VersionNumber  *int    `json:"version_number"`
 }
 
 // DAGTagCollectionResponse DAG Tags Collection serializer for responses.
@@ -1145,9 +1427,10 @@ type DAGWarningCollectionResponse struct {
 
 // DAGWarningResponse DAG Warning serializer for responses.
 type DAGWarningResponse struct {
-	DagId     string    `json:"dag_id"`
-	Message   string    `json:"message"`
-	Timestamp time.Time `json:"timestamp"`
+	DagDisplayName string    `json:"dag_display_name"`
+	DagId          string    `json:"dag_id"`
+	Message        string    `json:"message"`
+	Timestamp      time.Time `json:"timestamp"`
 
 	// WarningType Enum for DAG warning types.
 	//
@@ -1162,13 +1445,14 @@ type DagProcessorInfoResponse struct {
 	Status                      *string `json:"status"`
 }
 
-// DagRunAssetReference DAGRun serializer for asset responses.
+// DagRunAssetReference DagRun serializer for asset responses.
 type DagRunAssetReference struct {
 	DagId             string     `json:"dag_id"`
 	DataIntervalEnd   *time.Time `json:"data_interval_end"`
 	DataIntervalStart *time.Time `json:"data_interval_start"`
 	EndDate           *time.Time `json:"end_date"`
 	LogicalDate       *time.Time `json:"logical_date"`
+	PartitionKey      *string    `json:"partition_key"`
 	RunId             string     `json:"run_id"`
 	StartDate         time.Time  `json:"start_date"`
 	State             string     `json:"state"`
@@ -1202,8 +1486,9 @@ type DagStatsCollectionResponse struct {
 
 // DagStatsResponse DAG Stats serializer for responses.
 type DagStatsResponse struct {
-	DagId string                  `json:"dag_id"`
-	Stats []DagStatsStateResponse `json:"stats"`
+	DagDisplayName string                  `json:"dag_display_name"`
+	DagId          string                  `json:"dag_id"`
+	Stats          []DagStatsStateResponse `json:"stats"`
 }
 
 // DagStatsStateResponse DagStatsState serializer for responses.
@@ -1220,19 +1505,21 @@ type DagStatsStateResponse struct {
 
 // DagTagResponse DAG Tag serializer for responses.
 type DagTagResponse struct {
-	DagId string `json:"dag_id"`
-	Name  string `json:"name"`
+	DagDisplayName string `json:"dag_display_name"`
+	DagId          string `json:"dag_id"`
+	Name           string `json:"name"`
 }
 
 // DagVersionResponse Dag Version serializer for responses.
 type DagVersionResponse struct {
-	BundleName    *string            `json:"bundle_name"`
-	BundleUrl     *string            `json:"bundle_url,omitempty"`
-	BundleVersion *string            `json:"bundle_version"`
-	CreatedAt     time.Time          `json:"created_at"`
-	DagId         string             `json:"dag_id"`
-	Id            openapi_types.UUID `json:"id"`
-	VersionNumber int                `json:"version_number"`
+	BundleName     *string            `json:"bundle_name"`
+	BundleUrl      *string            `json:"bundle_url"`
+	BundleVersion  *string            `json:"bundle_version"`
+	CreatedAt      time.Time          `json:"created_at"`
+	DagDisplayName string             `json:"dag_display_name"`
+	DagId          string             `json:"dag_id"`
+	Id             openapi_types.UUID `json:"id"`
+	VersionNumber  int                `json:"version_number"`
 }
 
 // DagWarningType Enum for DAG warning types.
@@ -1249,7 +1536,9 @@ type DryRunBackfillCollectionResponse struct {
 
 // DryRunBackfillResponse Backfill serializer for responses in dry-run mode.
 type DryRunBackfillResponse struct {
-	LogicalDate time.Time `json:"logical_date"`
+	LogicalDate   *time.Time `json:"logical_date"`
+	PartitionDate *time.Time `json:"partition_date"`
+	PartitionKey  *string    `json:"partition_key"`
 }
 
 // EventLogCollectionResponse Event Log Collection Response.
@@ -1260,18 +1549,40 @@ type EventLogCollectionResponse struct {
 
 // EventLogResponse Event Log Response.
 type EventLogResponse struct {
-	DagId       *string    `json:"dag_id"`
-	Event       string     `json:"event"`
-	EventLogId  int        `json:"event_log_id"`
-	Extra       *string    `json:"extra"`
-	LogicalDate *time.Time `json:"logical_date"`
-	MapIndex    *int       `json:"map_index"`
-	Owner       *string    `json:"owner"`
-	RunId       *string    `json:"run_id"`
-	TaskId      *string    `json:"task_id"`
-	TryNumber   *int       `json:"try_number"`
-	When        time.Time  `json:"when"`
+	DagDisplayName  *string    `json:"dag_display_name,omitempty"`
+	DagId           *string    `json:"dag_id"`
+	Event           string     `json:"event"`
+	EventLogId      int        `json:"event_log_id"`
+	Extra           *string    `json:"extra"`
+	LogicalDate     *time.Time `json:"logical_date"`
+	MapIndex        *int       `json:"map_index"`
+	Owner           *string    `json:"owner"`
+	RunId           *string    `json:"run_id"`
+	TaskDisplayName *string    `json:"task_display_name,omitempty"`
+	TaskId          *string    `json:"task_id"`
+	TryNumber       *int       `json:"try_number"`
+	When            time.Time  `json:"when"`
 }
+
+// ExternalLogUrlResponse Response for the external log URL endpoint.
+type ExternalLogUrlResponse struct {
+	Url string `json:"url"`
+}
+
+// ExternalViewResponse Serializer for External View Plugin responses.
+type ExternalViewResponse struct {
+	Category             *string                          `json:"category,omitempty"`
+	Destination          *ExternalViewResponseDestination `json:"destination,omitempty"`
+	Href                 string                           `json:"href"`
+	Icon                 *string                          `json:"icon,omitempty"`
+	IconDarkMode         *string                          `json:"icon_dark_mode,omitempty"`
+	Name                 string                           `json:"name"`
+	UrlRoute             *string                          `json:"url_route,omitempty"`
+	AdditionalProperties map[string]interface{}           `json:"-"`
+}
+
+// ExternalViewResponseDestination defines model for ExternalViewResponse.Destination.
+type ExternalViewResponseDestination string
 
 // ExtraLinkCollectionResponse Extra Links Response.
 type ExtraLinkCollectionResponse struct {
@@ -1292,6 +1603,68 @@ type FastAPIRootMiddlewareResponse struct {
 	Middleware           string                 `json:"middleware"`
 	Name                 string                 `json:"name"`
 	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// HITLDetail Schema for Human-in-the-loop detail.
+type HITLDetail struct {
+	AssignedUsers    *[]HITLUser             `json:"assigned_users,omitempty"`
+	Body             *string                 `json:"body,omitempty"`
+	ChosenOptions    *[]string               `json:"chosen_options,omitempty"`
+	CreatedAt        time.Time               `json:"created_at"`
+	Defaults         *[]string               `json:"defaults,omitempty"`
+	Multiple         *bool                   `json:"multiple,omitempty"`
+	Options          []string                `json:"options"`
+	Params           *map[string]interface{} `json:"params,omitempty"`
+	ParamsInput      *map[string]interface{} `json:"params_input,omitempty"`
+	RespondedAt      *time.Time              `json:"responded_at,omitempty"`
+	RespondedByUser  *HITLUser               `json:"responded_by_user,omitempty"`
+	ResponseReceived *bool                   `json:"response_received,omitempty"`
+	Subject          string                  `json:"subject"`
+
+	// TaskInstance TaskInstance serializer for responses.
+	TaskInstance TaskInstanceResponse `json:"task_instance"`
+}
+
+// HITLDetailCollection Schema for a collection of Human-in-the-loop details.
+type HITLDetailCollection struct {
+	HitlDetails  []HITLDetail `json:"hitl_details"`
+	TotalEntries int          `json:"total_entries"`
+}
+
+// HITLDetailHistory Schema for Human-in-the-loop detail history.
+type HITLDetailHistory struct {
+	AssignedUsers    *[]HITLUser             `json:"assigned_users,omitempty"`
+	Body             *string                 `json:"body,omitempty"`
+	ChosenOptions    *[]string               `json:"chosen_options,omitempty"`
+	CreatedAt        time.Time               `json:"created_at"`
+	Defaults         *[]string               `json:"defaults,omitempty"`
+	Multiple         *bool                   `json:"multiple,omitempty"`
+	Options          []string                `json:"options"`
+	Params           *map[string]interface{} `json:"params,omitempty"`
+	ParamsInput      *map[string]interface{} `json:"params_input,omitempty"`
+	RespondedAt      *time.Time              `json:"responded_at,omitempty"`
+	RespondedByUser  *HITLUser               `json:"responded_by_user,omitempty"`
+	ResponseReceived *bool                   `json:"response_received,omitempty"`
+	Subject          string                  `json:"subject"`
+
+	// TaskInstance TaskInstanceHistory serializer for responses.
+	TaskInstance TaskInstanceHistoryResponse `json:"task_instance"`
+}
+
+// HITLDetailResponse Response of updating a Human-in-the-loop detail.
+type HITLDetailResponse struct {
+	ChosenOptions []string                `json:"chosen_options"`
+	ParamsInput   *map[string]interface{} `json:"params_input,omitempty"`
+	RespondedAt   time.Time               `json:"responded_at"`
+
+	// RespondedBy Schema for a Human-in-the-loop users.
+	RespondedBy HITLUser `json:"responded_by"`
+}
+
+// HITLUser Schema for a Human-in-the-loop users.
+type HITLUser struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 // HTTPExceptionResponse HTTPException Model used for error response.
@@ -1352,6 +1725,7 @@ type JobCollectionResponse struct {
 
 // JobResponse Job serializer for responses.
 type JobResponse struct {
+	DagDisplayName  *string    `json:"dag_display_name,omitempty"`
 	DagId           *string    `json:"dag_id"`
 	EndDate         *time.Time `json:"end_date"`
 	ExecutorClass   *string    `json:"executor_class"`
@@ -1366,6 +1740,12 @@ type JobResponse struct {
 
 // JsonValue defines model for JsonValue.
 type JsonValue = interface{}
+
+// LastAssetEventResponse Last asset event response serializer.
+type LastAssetEventResponse struct {
+	Id        *int       `json:"id,omitempty"`
+	Timestamp *time.Time `json:"timestamp,omitempty"`
+}
 
 // PatchTaskInstanceBody Request body for Clear Task Instances endpoint.
 type PatchTaskInstanceBody struct {
@@ -1383,10 +1763,26 @@ type PluginCollectionResponse struct {
 	TotalEntries int              `json:"total_entries"`
 }
 
+// PluginImportErrorCollectionResponse Plugin Import Error Collection serializer.
+type PluginImportErrorCollectionResponse struct {
+	ImportErrors []PluginImportErrorResponse `json:"import_errors"`
+	TotalEntries int                         `json:"total_entries"`
+}
+
+// PluginImportErrorResponse Plugin Import Error serializer for responses.
+type PluginImportErrorResponse struct {
+	Error  string `json:"error"`
+	Source string `json:"source"`
+}
+
 // PluginResponse Plugin serializer.
 type PluginResponse struct {
-	AppbuilderMenuItems      []AppBuilderMenuItemResponse    `json:"appbuilder_menu_items"`
-	AppbuilderViews          []AppBuilderViewResponse        `json:"appbuilder_views"`
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AppbuilderMenuItems []AppBuilderMenuItemResponse `json:"appbuilder_menu_items"`
+	AppbuilderViews     []AppBuilderViewResponse     `json:"appbuilder_views"`
+
+	// ExternalViews Aggregate all external views. Both 'external_views' and 'appbuilder_menu_items' are included here.
+	ExternalViews            []ExternalViewResponse          `json:"external_views"`
 	FastapiApps              []FastAPIAppResponse            `json:"fastapi_apps"`
 	FastapiRootMiddlewares   []FastAPIRootMiddlewareResponse `json:"fastapi_root_middlewares"`
 	FlaskBlueprints          []string                        `json:"flask_blueprints"`
@@ -1395,6 +1791,7 @@ type PluginResponse struct {
 	Macros                   []string                        `json:"macros"`
 	Name                     string                          `json:"name"`
 	OperatorExtraLinks       []string                        `json:"operator_extra_links"`
+	ReactApps                []ReactAppResponse              `json:"react_apps"`
 	Source                   string                          `json:"source"`
 	Timetables               []string                        `json:"timetables"`
 }
@@ -1404,7 +1801,10 @@ type PoolBody struct {
 	Description     *string `json:"description,omitempty"`
 	IncludeDeferred *bool   `json:"include_deferred,omitempty"`
 	Name            string  `json:"name"`
-	Slots           int     `json:"slots"`
+
+	// Slots Number of slots. Use -1 for unlimited.
+	Slots    int     `json:"slots"`
+	TeamName *string `json:"team_name,omitempty"`
 }
 
 // PoolCollectionResponse Pool Collection serializer for responses.
@@ -1419,12 +1819,13 @@ type PoolPatchBody struct {
 	IncludeDeferred *bool   `json:"include_deferred,omitempty"`
 	Pool            *string `json:"pool,omitempty"`
 	Slots           *int    `json:"slots,omitempty"`
+	TeamName        *string `json:"team_name,omitempty"`
 }
 
 // PoolResponse Pool serializer for responses.
 type PoolResponse struct {
 	DeferredSlots   int     `json:"deferred_slots"`
-	Description     *string `json:"description"`
+	Description     *string `json:"description,omitempty"`
 	IncludeDeferred bool    `json:"include_deferred"`
 	Name            string  `json:"name"`
 	OccupiedSlots   int     `json:"occupied_slots"`
@@ -1432,7 +1833,10 @@ type PoolResponse struct {
 	QueuedSlots     int     `json:"queued_slots"`
 	RunningSlots    int     `json:"running_slots"`
 	ScheduledSlots  int     `json:"scheduled_slots"`
-	Slots           int     `json:"slots"`
+
+	// Slots Number of slots. Use -1 for unlimited.
+	Slots    int     `json:"slots"`
+	TeamName *string `json:"team_name"`
 }
 
 // ProviderCollectionResponse Provider Collection serializer for responses.
@@ -1443,9 +1847,10 @@ type ProviderCollectionResponse struct {
 
 // ProviderResponse Provider serializer for responses.
 type ProviderResponse struct {
-	Description string `json:"description"`
-	PackageName string `json:"package_name"`
-	Version     string `json:"version"`
+	Description      string  `json:"description"`
+	DocumentationUrl *string `json:"documentation_url"`
+	PackageName      string  `json:"package_name"`
+	Version          string  `json:"version"`
 }
 
 // QueuedEventCollectionResponse Queued Event Collection serializer for responses.
@@ -1456,10 +1861,26 @@ type QueuedEventCollectionResponse struct {
 
 // QueuedEventResponse Queued Event serializer for responses..
 type QueuedEventResponse struct {
-	AssetId   int       `json:"asset_id"`
-	CreatedAt time.Time `json:"created_at"`
-	DagId     string    `json:"dag_id"`
+	AssetId        int       `json:"asset_id"`
+	CreatedAt      time.Time `json:"created_at"`
+	DagDisplayName string    `json:"dag_display_name"`
+	DagId          string    `json:"dag_id"`
 }
+
+// ReactAppResponse Serializer for React App Plugin responses.
+type ReactAppResponse struct {
+	BundleUrl            string                       `json:"bundle_url"`
+	Category             *string                      `json:"category,omitempty"`
+	Destination          *ReactAppResponseDestination `json:"destination,omitempty"`
+	Icon                 *string                      `json:"icon,omitempty"`
+	IconDarkMode         *string                      `json:"icon_dark_mode,omitempty"`
+	Name                 string                       `json:"name"`
+	UrlRoute             *string                      `json:"url_route,omitempty"`
+	AdditionalProperties map[string]interface{}       `json:"-"`
+}
+
+// ReactAppResponseDestination defines model for ReactAppResponse.Destination.
+type ReactAppResponseDestination string
 
 // ReprocessBehavior Internal enum for setting reprocess behavior in a backfill.
 //
@@ -1496,6 +1917,14 @@ type TaskDependencyResponse struct {
 	Reason string `json:"reason"`
 }
 
+// TaskInletAssetReference Task inlet reference serializer for assets.
+type TaskInletAssetReference struct {
+	CreatedAt time.Time `json:"created_at"`
+	DagId     string    `json:"dag_id"`
+	TaskId    string    `json:"task_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 // TaskInstanceCollectionResponse Task Instance Collection serializer for responses.
 type TaskInstanceCollectionResponse struct {
 	TaskInstances []TaskInstanceResponse `json:"task_instances"`
@@ -1510,6 +1939,7 @@ type TaskInstanceHistoryCollectionResponse struct {
 
 // TaskInstanceHistoryResponse TaskInstanceHistory serializer for responses.
 type TaskInstanceHistoryResponse struct {
+	DagDisplayName  string              `json:"dag_display_name"`
 	DagId           string              `json:"dag_id"`
 	DagRunId        string              `json:"dag_run_id"`
 	DagVersion      *DagVersionResponse `json:"dag_version"`
@@ -1521,6 +1951,7 @@ type TaskInstanceHistoryResponse struct {
 	MapIndex        int                 `json:"map_index"`
 	MaxTries        int                 `json:"max_tries"`
 	Operator        *string             `json:"operator"`
+	OperatorName    *string             `json:"operator_name"`
 	Pid             *int                `json:"pid"`
 	Pool            string              `json:"pool"`
 	PoolSlots       int                 `json:"pool_slots"`
@@ -1538,6 +1969,7 @@ type TaskInstanceHistoryResponse struct {
 
 // TaskInstanceResponse TaskInstance serializer for responses.
 type TaskInstanceResponse struct {
+	DagDisplayName   string                  `json:"dag_display_name"`
 	DagId            string                  `json:"dag_id"`
 	DagRunId         string                  `json:"dag_run_id"`
 	DagVersion       *DagVersionResponse     `json:"dag_version"`
@@ -1546,12 +1978,13 @@ type TaskInstanceResponse struct {
 	Executor         *string                 `json:"executor"`
 	ExecutorConfig   string                  `json:"executor_config"`
 	Hostname         *string                 `json:"hostname"`
-	Id               string                  `json:"id"`
+	Id               openapi_types.UUID      `json:"id"`
 	LogicalDate      *time.Time              `json:"logical_date"`
 	MapIndex         int                     `json:"map_index"`
 	MaxTries         int                     `json:"max_tries"`
 	Note             *string                 `json:"note"`
 	Operator         *string                 `json:"operator"`
+	OperatorName     *string                 `json:"operator_name"`
 	Pid              *int                    `json:"pid"`
 	Pool             string                  `json:"pool"`
 	PoolSlots        int                     `json:"pool_slots"`
@@ -1581,21 +2014,31 @@ type TaskInstanceState string
 type TaskInstancesBatchBody struct {
 	DagIds         *[]string             `json:"dag_ids,omitempty"`
 	DagRunIds      *[]string             `json:"dag_run_ids,omitempty"`
+	DurationGt     *float32              `json:"duration_gt,omitempty"`
 	DurationGte    *float32              `json:"duration_gte,omitempty"`
+	DurationLt     *float32              `json:"duration_lt,omitempty"`
 	DurationLte    *float32              `json:"duration_lte,omitempty"`
+	EndDateGt      *time.Time            `json:"end_date_gt,omitempty"`
 	EndDateGte     *time.Time            `json:"end_date_gte,omitempty"`
+	EndDateLt      *time.Time            `json:"end_date_lt,omitempty"`
 	EndDateLte     *time.Time            `json:"end_date_lte,omitempty"`
 	Executor       *[]string             `json:"executor,omitempty"`
+	LogicalDateGt  *time.Time            `json:"logical_date_gt,omitempty"`
 	LogicalDateGte *time.Time            `json:"logical_date_gte,omitempty"`
+	LogicalDateLt  *time.Time            `json:"logical_date_lt,omitempty"`
 	LogicalDateLte *time.Time            `json:"logical_date_lte,omitempty"`
 	OrderBy        *string               `json:"order_by,omitempty"`
 	PageLimit      *int                  `json:"page_limit,omitempty"`
 	PageOffset     *int                  `json:"page_offset,omitempty"`
 	Pool           *[]string             `json:"pool,omitempty"`
 	Queue          *[]string             `json:"queue,omitempty"`
+	RunAfterGt     *time.Time            `json:"run_after_gt,omitempty"`
 	RunAfterGte    *time.Time            `json:"run_after_gte,omitempty"`
+	RunAfterLt     *time.Time            `json:"run_after_lt,omitempty"`
 	RunAfterLte    *time.Time            `json:"run_after_lte,omitempty"`
+	StartDateGt    *time.Time            `json:"start_date_gt,omitempty"`
 	StartDateGte   *time.Time            `json:"start_date_gte,omitempty"`
+	StartDateLt    *time.Time            `json:"start_date_lt,omitempty"`
 	StartDateLte   *time.Time            `json:"start_date_lte,omitempty"`
 	State          *[]*TaskInstanceState `json:"state,omitempty"`
 	TaskIds        *[]string             `json:"task_ids,omitempty"`
@@ -1647,7 +2090,7 @@ type TaskResponse struct {
 	Queue                   *string                 `json:"queue"`
 	Retries                 *float32                `json:"retries"`
 	RetryDelay              *TimeDelta              `json:"retry_delay"`
-	RetryExponentialBackoff bool                    `json:"retry_exponential_backoff"`
+	RetryExponentialBackoff float32                 `json:"retry_exponential_backoff"`
 	StartDate               *time.Time              `json:"start_date"`
 	TaskDisplayName         *string                 `json:"task_display_name"`
 	TaskId                  *string                 `json:"task_id"`
@@ -1675,6 +2118,7 @@ type TriggerDAGRunPostBody struct {
 	DataIntervalStart *time.Time              `json:"data_interval_start,omitempty"`
 	LogicalDate       *time.Time              `json:"logical_date"`
 	Note              *string                 `json:"note,omitempty"`
+	PartitionKey      *string                 `json:"partition_key,omitempty"`
 	RunAfter          *time.Time              `json:"run_after,omitempty"`
 }
 
@@ -1684,6 +2128,7 @@ type TriggerResponse struct {
 	CreatedDate time.Time `json:"created_date"`
 	Id          int       `json:"id"`
 	Kwargs      string    `json:"kwargs"`
+	Queue       *string   `json:"queue"`
 	TriggererId *int      `json:"triggerer_id"`
 }
 
@@ -1693,11 +2138,19 @@ type TriggererInfoResponse struct {
 	Status                   *string `json:"status"`
 }
 
+// UpdateHITLDetailPayload Schema for updating the content of a Human-in-the-loop detail.
+type UpdateHITLDetailPayload struct {
+	ChosenOptions []string                `json:"chosen_options"`
+	ParamsInput   *map[string]interface{} `json:"params_input,omitempty"`
+}
+
 // ValidationError defines model for ValidationError.
 type ValidationError struct {
-	Loc  []ValidationError_Loc_Item `json:"loc"`
-	Msg  string                     `json:"msg"`
-	Type string                     `json:"type"`
+	Ctx   *map[string]interface{}    `json:"ctx,omitempty"`
+	Input interface{}                `json:"input,omitempty"`
+	Loc   []ValidationError_Loc_Item `json:"loc"`
+	Msg   string                     `json:"msg"`
+	Type  string                     `json:"type"`
 }
 
 // ValidationErrorLoc0 defines model for ValidationError.Loc.0.
@@ -1715,6 +2168,7 @@ type ValidationError_Loc_Item struct {
 type VariableBody struct {
 	Description *string   `json:"description,omitempty"`
 	Key         string    `json:"key"`
+	TeamName    *string   `json:"team_name,omitempty"`
 	Value       JsonValue `json:"value"`
 }
 
@@ -1729,6 +2183,7 @@ type VariableResponse struct {
 	Description *string `json:"description"`
 	IsEncrypted bool    `json:"is_encrypted"`
 	Key         string  `json:"key"`
+	TeamName    *string `json:"team_name"`
 	Value       string  `json:"value"`
 }
 
@@ -1753,37 +2208,46 @@ type XComCreateBody struct {
 
 // XComResponse Serializer for a xcom item.
 type XComResponse struct {
-	DagId       string     `json:"dag_id"`
-	Key         string     `json:"key"`
-	LogicalDate *time.Time `json:"logical_date"`
-	MapIndex    int        `json:"map_index"`
-	RunId       string     `json:"run_id"`
-	TaskId      string     `json:"task_id"`
-	Timestamp   time.Time  `json:"timestamp"`
+	DagDisplayName  string     `json:"dag_display_name"`
+	DagId           string     `json:"dag_id"`
+	Key             string     `json:"key"`
+	LogicalDate     *time.Time `json:"logical_date"`
+	MapIndex        int        `json:"map_index"`
+	RunAfter        time.Time  `json:"run_after"`
+	RunId           string     `json:"run_id"`
+	TaskDisplayName string     `json:"task_display_name"`
+	TaskId          string     `json:"task_id"`
+	Timestamp       time.Time  `json:"timestamp"`
 }
 
 // XComResponseNative XCom response serializer with native return type.
 type XComResponseNative struct {
-	DagId       string      `json:"dag_id"`
-	Key         string      `json:"key"`
-	LogicalDate *time.Time  `json:"logical_date"`
-	MapIndex    int         `json:"map_index"`
-	RunId       string      `json:"run_id"`
-	TaskId      string      `json:"task_id"`
-	Timestamp   time.Time   `json:"timestamp"`
-	Value       interface{} `json:"value"`
+	DagDisplayName  string      `json:"dag_display_name"`
+	DagId           string      `json:"dag_id"`
+	Key             string      `json:"key"`
+	LogicalDate     *time.Time  `json:"logical_date"`
+	MapIndex        int         `json:"map_index"`
+	RunAfter        time.Time   `json:"run_after"`
+	RunId           string      `json:"run_id"`
+	TaskDisplayName string      `json:"task_display_name"`
+	TaskId          string      `json:"task_id"`
+	Timestamp       time.Time   `json:"timestamp"`
+	Value           interface{} `json:"value"`
 }
 
 // XComResponseString XCom response serializer with string return type.
 type XComResponseString struct {
-	DagId       string     `json:"dag_id"`
-	Key         string     `json:"key"`
-	LogicalDate *time.Time `json:"logical_date"`
-	MapIndex    int        `json:"map_index"`
-	RunId       string     `json:"run_id"`
-	TaskId      string     `json:"task_id"`
-	Timestamp   time.Time  `json:"timestamp"`
-	Value       *string    `json:"value"`
+	DagDisplayName  string     `json:"dag_display_name"`
+	DagId           string     `json:"dag_id"`
+	Key             string     `json:"key"`
+	LogicalDate     *time.Time `json:"logical_date"`
+	MapIndex        int        `json:"map_index"`
+	RunAfter        time.Time  `json:"run_after"`
+	RunId           string     `json:"run_id"`
+	TaskDisplayName string     `json:"task_display_name"`
+	TaskId          string     `json:"task_id"`
+	Timestamp       time.Time  `json:"timestamp"`
+	Value           *string    `json:"value"`
 }
 
 // XComUpdateBody Payload serializer for updating an XCom entry.
@@ -1794,35 +2258,52 @@ type XComUpdateBody struct {
 
 // GetAssetsParams defines parameters for GetAssets.
 type GetAssetsParams struct {
-	Limit       *int      `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset      *int      `form:"offset,omitempty" json:"offset,omitempty"`
-	NamePattern *string   `form:"name_pattern,omitempty" json:"name_pattern,omitempty"`
-	UriPattern  *string   `form:"uri_pattern,omitempty" json:"uri_pattern,omitempty"`
-	DagIds      *[]string `form:"dag_ids,omitempty" json:"dag_ids,omitempty"`
-	OnlyActive  *bool     `form:"only_active,omitempty" json:"only_active,omitempty"`
-	OrderBy     *string   `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// NamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	NamePattern *string `form:"name_pattern,omitempty" json:"name_pattern,omitempty"`
+
+	// UriPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	UriPattern *string   `form:"uri_pattern,omitempty" json:"uri_pattern,omitempty"`
+	DagIds     *[]string `form:"dag_ids,omitempty" json:"dag_ids,omitempty"`
+	OnlyActive *bool     `form:"only_active,omitempty" json:"only_active,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, name, uri, created_at, updated_at`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
 }
 
 // GetAssetAliasesParams defines parameters for GetAssetAliases.
 type GetAssetAliasesParams struct {
-	Limit       *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset      *int    `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// NamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
 	NamePattern *string `form:"name_pattern,omitempty" json:"name_pattern,omitempty"`
-	OrderBy     *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, name`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
 }
 
 // GetAssetEventsParams defines parameters for GetAssetEvents.
 type GetAssetEventsParams struct {
-	Limit          *int       `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset         *int       `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy        *string    `form:"order_by,omitempty" json:"order_by,omitempty"`
-	AssetId        *int       `form:"asset_id,omitempty" json:"asset_id,omitempty"`
-	SourceDagId    *string    `form:"source_dag_id,omitempty" json:"source_dag_id,omitempty"`
-	SourceTaskId   *string    `form:"source_task_id,omitempty" json:"source_task_id,omitempty"`
-	SourceRunId    *string    `form:"source_run_id,omitempty" json:"source_run_id,omitempty"`
-	SourceMapIndex *int       `form:"source_map_index,omitempty" json:"source_map_index,omitempty"`
-	TimestampGte   *time.Time `form:"timestamp_gte,omitempty" json:"timestamp_gte,omitempty"`
-	TimestampLte   *time.Time `form:"timestamp_lte,omitempty" json:"timestamp_lte,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `source_task_id, source_dag_id, source_run_id, source_map_index, timestamp`
+	OrderBy        *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	AssetId        *int      `form:"asset_id,omitempty" json:"asset_id,omitempty"`
+	SourceDagId    *string   `form:"source_dag_id,omitempty" json:"source_dag_id,omitempty"`
+	SourceTaskId   *string   `form:"source_task_id,omitempty" json:"source_task_id,omitempty"`
+	SourceRunId    *string   `form:"source_run_id,omitempty" json:"source_run_id,omitempty"`
+	SourceMapIndex *int      `form:"source_map_index,omitempty" json:"source_map_index,omitempty"`
+
+	// NamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	NamePattern  *string    `form:"name_pattern,omitempty" json:"name_pattern,omitempty"`
+	TimestampGte *time.Time `form:"timestamp_gte,omitempty" json:"timestamp_gte,omitempty"`
+	TimestampGt  *time.Time `form:"timestamp_gt,omitempty" json:"timestamp_gt,omitempty"`
+	TimestampLte *time.Time `form:"timestamp_lte,omitempty" json:"timestamp_lte,omitempty"`
+	TimestampLt  *time.Time `form:"timestamp_lt,omitempty" json:"timestamp_lt,omitempty"`
 }
 
 // DeleteAssetQueuedEventsParams defines parameters for DeleteAssetQueuedEvents.
@@ -1840,17 +2321,14 @@ type LoginParams struct {
 	Next *string `form:"next,omitempty" json:"next,omitempty"`
 }
 
-// LogoutParams defines parameters for Logout.
-type LogoutParams struct {
-	Next *string `form:"next,omitempty" json:"next,omitempty"`
-}
-
 // ListBackfillsParams defines parameters for ListBackfills.
 type ListBackfillsParams struct {
-	DagId   string  `form:"dag_id" json:"dag_id"`
-	Limit   *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset  *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	DagId  string `form:"dag_id" json:"dag_id"`
+	Limit  *int   `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int   `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
 }
 
 // GetConfigParams defines parameters for GetConfig.
@@ -1872,20 +2350,19 @@ type GetConfigValueParamsAccept string
 
 // GetConnectionsParams defines parameters for GetConnections.
 type GetConnectionsParams struct {
-	Limit               *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset              *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy             *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `conn_id, conn_type, description, host, port, id, team_name, connection_id`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// ConnectionIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
 	ConnectionIdPattern *string `form:"connection_id_pattern,omitempty" json:"connection_id_pattern,omitempty"`
 }
 
 // PatchConnectionParams defines parameters for PatchConnection.
 type PatchConnectionParams struct {
 	UpdateMask *[]string `form:"update_mask,omitempty" json:"update_mask,omitempty"`
-}
-
-// GetDagReportsParams defines parameters for GetDagReports.
-type GetDagReportsParams struct {
-	Subdir string `form:"subdir" json:"subdir"`
 }
 
 // GetDagSourceParams defines parameters for GetDagSource.
@@ -1904,9 +2381,13 @@ type GetDagStatsParams struct {
 
 // GetDagTagsParams defines parameters for GetDagTags.
 type GetDagTagsParams struct {
-	Limit          *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset         *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy        *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `name`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// TagNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
 	TagNamePattern *string `form:"tag_name_pattern,omitempty" json:"tag_name_pattern,omitempty"`
 }
 
@@ -1916,27 +2397,52 @@ type ListDagWarningsParams struct {
 	WarningType *DagWarningType `form:"warning_type,omitempty" json:"warning_type,omitempty"`
 	Limit       *int            `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset      *int            `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy     *string         `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `dag_id, warning_type, message, timestamp`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
 }
 
 // GetDagsParams defines parameters for GetDags.
 type GetDagsParams struct {
-	Limit                 *int                        `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset                *int                        `form:"offset,omitempty" json:"offset,omitempty"`
-	Tags                  *[]string                   `form:"tags,omitempty" json:"tags,omitempty"`
-	TagsMatchMode         *GetDagsParamsTagsMatchMode `form:"tags_match_mode,omitempty" json:"tags_match_mode,omitempty"`
-	Owners                *[]string                   `form:"owners,omitempty" json:"owners,omitempty"`
-	DagIdPattern          *string                     `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
-	DagDisplayNamePattern *string                     `form:"dag_display_name_pattern,omitempty" json:"dag_display_name_pattern,omitempty"`
-	ExcludeStale          *bool                       `form:"exclude_stale,omitempty" json:"exclude_stale,omitempty"`
-	Paused                *bool                       `form:"paused,omitempty" json:"paused,omitempty"`
-	LastDagRunState       *DagRunState                `form:"last_dag_run_state,omitempty" json:"last_dag_run_state,omitempty"`
-	DagRunStartDateGte    *time.Time                  `form:"dag_run_start_date_gte,omitempty" json:"dag_run_start_date_gte,omitempty"`
-	DagRunStartDateLte    *time.Time                  `form:"dag_run_start_date_lte,omitempty" json:"dag_run_start_date_lte,omitempty"`
-	DagRunEndDateGte      *time.Time                  `form:"dag_run_end_date_gte,omitempty" json:"dag_run_end_date_gte,omitempty"`
-	DagRunEndDateLte      *time.Time                  `form:"dag_run_end_date_lte,omitempty" json:"dag_run_end_date_lte,omitempty"`
-	DagRunState           *[]string                   `form:"dag_run_state,omitempty" json:"dag_run_state,omitempty"`
-	OrderBy               *string                     `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit         *int                        `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset        *int                        `form:"offset,omitempty" json:"offset,omitempty"`
+	Tags          *[]string                   `form:"tags,omitempty" json:"tags,omitempty"`
+	TagsMatchMode *GetDagsParamsTagsMatchMode `form:"tags_match_mode,omitempty" json:"tags_match_mode,omitempty"`
+	Owners        *[]string                   `form:"owners,omitempty" json:"owners,omitempty"`
+
+	// DagIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagIdPattern *string `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
+
+	// DagDisplayNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagDisplayNamePattern *string `form:"dag_display_name_pattern,omitempty" json:"dag_display_name_pattern,omitempty"`
+	ExcludeStale          *bool   `form:"exclude_stale,omitempty" json:"exclude_stale,omitempty"`
+	Paused                *bool   `form:"paused,omitempty" json:"paused,omitempty"`
+
+	// HasImportErrors Filter Dags by having import errors. Only Dags that have been successfully loaded before will be returned.
+	HasImportErrors *bool        `form:"has_import_errors,omitempty" json:"has_import_errors,omitempty"`
+	LastDagRunState *DagRunState `form:"last_dag_run_state,omitempty" json:"last_dag_run_state,omitempty"`
+	BundleName      *string      `form:"bundle_name,omitempty" json:"bundle_name,omitempty"`
+	BundleVersion   *string      `form:"bundle_version,omitempty" json:"bundle_version,omitempty"`
+
+	// HasAssetSchedule Filter Dags with asset-based scheduling
+	HasAssetSchedule *bool `form:"has_asset_schedule,omitempty" json:"has_asset_schedule,omitempty"`
+
+	// AssetDependency Filter Dags by asset dependency (name or URI)
+	AssetDependency    *string    `form:"asset_dependency,omitempty" json:"asset_dependency,omitempty"`
+	DagRunStartDateGte *time.Time `form:"dag_run_start_date_gte,omitempty" json:"dag_run_start_date_gte,omitempty"`
+	DagRunStartDateGt  *time.Time `form:"dag_run_start_date_gt,omitempty" json:"dag_run_start_date_gt,omitempty"`
+	DagRunStartDateLte *time.Time `form:"dag_run_start_date_lte,omitempty" json:"dag_run_start_date_lte,omitempty"`
+	DagRunStartDateLt  *time.Time `form:"dag_run_start_date_lt,omitempty" json:"dag_run_start_date_lt,omitempty"`
+	DagRunEndDateGte   *time.Time `form:"dag_run_end_date_gte,omitempty" json:"dag_run_end_date_gte,omitempty"`
+	DagRunEndDateGt    *time.Time `form:"dag_run_end_date_gt,omitempty" json:"dag_run_end_date_gt,omitempty"`
+	DagRunEndDateLte   *time.Time `form:"dag_run_end_date_lte,omitempty" json:"dag_run_end_date_lte,omitempty"`
+	DagRunEndDateLt    *time.Time `form:"dag_run_end_date_lt,omitempty" json:"dag_run_end_date_lt,omitempty"`
+	DagRunState        *[]string  `form:"dag_run_state,omitempty" json:"dag_run_state,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `dag_id, dag_display_name, next_dagrun, state, start_date, last_run_state, last_run_start_date`
+	OrderBy       *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	IsFavorite    *bool     `form:"is_favorite,omitempty" json:"is_favorite,omitempty"`
+	TimetableType *[]string `form:"timetable_type,omitempty" json:"timetable_type,omitempty"`
 }
 
 // GetDagsParamsTagsMatchMode defines parameters for GetDags.
@@ -1950,9 +2456,11 @@ type PatchDagsParams struct {
 	Tags          *[]string                     `form:"tags,omitempty" json:"tags,omitempty"`
 	TagsMatchMode *PatchDagsParamsTagsMatchMode `form:"tags_match_mode,omitempty" json:"tags_match_mode,omitempty"`
 	Owners        *[]string                     `form:"owners,omitempty" json:"owners,omitempty"`
-	DagIdPattern  *string                       `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
-	ExcludeStale  *bool                         `form:"exclude_stale,omitempty" json:"exclude_stale,omitempty"`
-	Paused        *bool                         `form:"paused,omitempty" json:"paused,omitempty"`
+
+	// DagIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagIdPattern *string `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
+	ExcludeStale *bool   `form:"exclude_stale,omitempty" json:"exclude_stale,omitempty"`
+	Paused       *bool   `form:"paused,omitempty" json:"paused,omitempty"`
 }
 
 // PatchDagsParamsTagsMatchMode defines parameters for PatchDags.
@@ -1988,18 +2496,49 @@ type GetDagRunsParams struct {
 	Limit          *int       `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset         *int       `form:"offset,omitempty" json:"offset,omitempty"`
 	RunAfterGte    *time.Time `form:"run_after_gte,omitempty" json:"run_after_gte,omitempty"`
+	RunAfterGt     *time.Time `form:"run_after_gt,omitempty" json:"run_after_gt,omitempty"`
 	RunAfterLte    *time.Time `form:"run_after_lte,omitempty" json:"run_after_lte,omitempty"`
+	RunAfterLt     *time.Time `form:"run_after_lt,omitempty" json:"run_after_lt,omitempty"`
 	LogicalDateGte *time.Time `form:"logical_date_gte,omitempty" json:"logical_date_gte,omitempty"`
+	LogicalDateGt  *time.Time `form:"logical_date_gt,omitempty" json:"logical_date_gt,omitempty"`
 	LogicalDateLte *time.Time `form:"logical_date_lte,omitempty" json:"logical_date_lte,omitempty"`
+	LogicalDateLt  *time.Time `form:"logical_date_lt,omitempty" json:"logical_date_lt,omitempty"`
 	StartDateGte   *time.Time `form:"start_date_gte,omitempty" json:"start_date_gte,omitempty"`
+	StartDateGt    *time.Time `form:"start_date_gt,omitempty" json:"start_date_gt,omitempty"`
 	StartDateLte   *time.Time `form:"start_date_lte,omitempty" json:"start_date_lte,omitempty"`
+	StartDateLt    *time.Time `form:"start_date_lt,omitempty" json:"start_date_lt,omitempty"`
 	EndDateGte     *time.Time `form:"end_date_gte,omitempty" json:"end_date_gte,omitempty"`
+	EndDateGt      *time.Time `form:"end_date_gt,omitempty" json:"end_date_gt,omitempty"`
 	EndDateLte     *time.Time `form:"end_date_lte,omitempty" json:"end_date_lte,omitempty"`
+	EndDateLt      *time.Time `form:"end_date_lt,omitempty" json:"end_date_lt,omitempty"`
+	DurationGte    *float32   `form:"duration_gte,omitempty" json:"duration_gte,omitempty"`
+	DurationGt     *float32   `form:"duration_gt,omitempty" json:"duration_gt,omitempty"`
+	DurationLte    *float32   `form:"duration_lte,omitempty" json:"duration_lte,omitempty"`
+	DurationLt     *float32   `form:"duration_lt,omitempty" json:"duration_lt,omitempty"`
 	UpdatedAtGte   *time.Time `form:"updated_at_gte,omitempty" json:"updated_at_gte,omitempty"`
+	UpdatedAtGt    *time.Time `form:"updated_at_gt,omitempty" json:"updated_at_gt,omitempty"`
 	UpdatedAtLte   *time.Time `form:"updated_at_lte,omitempty" json:"updated_at_lte,omitempty"`
+	UpdatedAtLt    *time.Time `form:"updated_at_lt,omitempty" json:"updated_at_lt,omitempty"`
+	ConfContains   *string    `form:"conf_contains,omitempty" json:"conf_contains,omitempty"`
 	RunType        *[]string  `form:"run_type,omitempty" json:"run_type,omitempty"`
 	State          *[]string  `form:"state,omitempty" json:"state,omitempty"`
-	OrderBy        *string    `form:"order_by,omitempty" json:"order_by,omitempty"`
+	DagVersion     *[]int     `form:"dag_version,omitempty" json:"dag_version,omitempty"`
+	BundleVersion  *string    `form:"bundle_version,omitempty" json:"bundle_version,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, state, dag_id, run_id, logical_date, run_after, start_date, end_date, updated_at, conf, duration, dag_run_id`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// RunIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	RunIdPattern *string `form:"run_id_pattern,omitempty" json:"run_id_pattern,omitempty"`
+
+	// TriggeringUserNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	TriggeringUserNamePattern *string `form:"triggering_user_name_pattern,omitempty" json:"triggering_user_name_pattern,omitempty"`
+
+	// DagIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagIdPattern *string `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
+
+	// PartitionKeyPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	PartitionKeyPattern *string `form:"partition_key_pattern,omitempty" json:"partition_key_pattern,omitempty"`
 }
 
 // GetListDagRunsBatchParamsDagId defines parameters for GetListDagRunsBatch.
@@ -2015,30 +2554,98 @@ type ClearDagRun200JSONResponseBody struct {
 	union json.RawMessage
 }
 
+// GetHitlDetailsParams defines parameters for GetHitlDetails.
+type GetHitlDetailsParams struct {
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `ti_id, subject, responded_at, created_at, responded_by_user_id, responded_by_user_name, dag_id, run_id, task_display_name, run_after, rendered_map_index, task_instance_operator, task_instance_state`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// DagIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagIdPattern *string `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
+	TaskId       *string `form:"task_id,omitempty" json:"task_id,omitempty"`
+
+	// TaskIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	TaskIdPattern       *string   `form:"task_id_pattern,omitempty" json:"task_id_pattern,omitempty"`
+	MapIndex            *int      `form:"map_index,omitempty" json:"map_index,omitempty"`
+	State               *[]string `form:"state,omitempty" json:"state,omitempty"`
+	ResponseReceived    *bool     `form:"response_received,omitempty" json:"response_received,omitempty"`
+	RespondedByUserId   *[]string `form:"responded_by_user_id,omitempty" json:"responded_by_user_id,omitempty"`
+	RespondedByUserName *[]string `form:"responded_by_user_name,omitempty" json:"responded_by_user_name,omitempty"`
+
+	// SubjectSearch SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	SubjectSearch *string `form:"subject_search,omitempty" json:"subject_search,omitempty"`
+
+	// BodySearch SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	BodySearch   *string    `form:"body_search,omitempty" json:"body_search,omitempty"`
+	CreatedAtGte *time.Time `form:"created_at_gte,omitempty" json:"created_at_gte,omitempty"`
+	CreatedAtGt  *time.Time `form:"created_at_gt,omitempty" json:"created_at_gt,omitempty"`
+	CreatedAtLte *time.Time `form:"created_at_lte,omitempty" json:"created_at_lte,omitempty"`
+	CreatedAtLt  *time.Time `form:"created_at_lt,omitempty" json:"created_at_lt,omitempty"`
+}
+
 // GetTaskInstancesParams defines parameters for GetTaskInstances.
 type GetTaskInstancesParams struct {
-	TaskId                 *string    `form:"task_id,omitempty" json:"task_id,omitempty"`
-	RunAfterGte            *time.Time `form:"run_after_gte,omitempty" json:"run_after_gte,omitempty"`
-	RunAfterLte            *time.Time `form:"run_after_lte,omitempty" json:"run_after_lte,omitempty"`
-	LogicalDateGte         *time.Time `form:"logical_date_gte,omitempty" json:"logical_date_gte,omitempty"`
-	LogicalDateLte         *time.Time `form:"logical_date_lte,omitempty" json:"logical_date_lte,omitempty"`
-	StartDateGte           *time.Time `form:"start_date_gte,omitempty" json:"start_date_gte,omitempty"`
-	StartDateLte           *time.Time `form:"start_date_lte,omitempty" json:"start_date_lte,omitempty"`
-	EndDateGte             *time.Time `form:"end_date_gte,omitempty" json:"end_date_gte,omitempty"`
-	EndDateLte             *time.Time `form:"end_date_lte,omitempty" json:"end_date_lte,omitempty"`
-	UpdatedAtGte           *time.Time `form:"updated_at_gte,omitempty" json:"updated_at_gte,omitempty"`
-	UpdatedAtLte           *time.Time `form:"updated_at_lte,omitempty" json:"updated_at_lte,omitempty"`
-	DurationGte            *float32   `form:"duration_gte,omitempty" json:"duration_gte,omitempty"`
-	DurationLte            *float32   `form:"duration_lte,omitempty" json:"duration_lte,omitempty"`
-	TaskDisplayNamePattern *string    `form:"task_display_name_pattern,omitempty" json:"task_display_name_pattern,omitempty"`
-	State                  *[]string  `form:"state,omitempty" json:"state,omitempty"`
-	Pool                   *[]string  `form:"pool,omitempty" json:"pool,omitempty"`
-	Queue                  *[]string  `form:"queue,omitempty" json:"queue,omitempty"`
-	Executor               *[]string  `form:"executor,omitempty" json:"executor,omitempty"`
-	VersionNumber          *[]int     `form:"version_number,omitempty" json:"version_number,omitempty"`
-	Limit                  *int       `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset                 *int       `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy                *string    `form:"order_by,omitempty" json:"order_by,omitempty"`
+	TaskId         *string    `form:"task_id,omitempty" json:"task_id,omitempty"`
+	RunAfterGte    *time.Time `form:"run_after_gte,omitempty" json:"run_after_gte,omitempty"`
+	RunAfterGt     *time.Time `form:"run_after_gt,omitempty" json:"run_after_gt,omitempty"`
+	RunAfterLte    *time.Time `form:"run_after_lte,omitempty" json:"run_after_lte,omitempty"`
+	RunAfterLt     *time.Time `form:"run_after_lt,omitempty" json:"run_after_lt,omitempty"`
+	LogicalDateGte *time.Time `form:"logical_date_gte,omitempty" json:"logical_date_gte,omitempty"`
+	LogicalDateGt  *time.Time `form:"logical_date_gt,omitempty" json:"logical_date_gt,omitempty"`
+	LogicalDateLte *time.Time `form:"logical_date_lte,omitempty" json:"logical_date_lte,omitempty"`
+	LogicalDateLt  *time.Time `form:"logical_date_lt,omitempty" json:"logical_date_lt,omitempty"`
+	StartDateGte   *time.Time `form:"start_date_gte,omitempty" json:"start_date_gte,omitempty"`
+	StartDateGt    *time.Time `form:"start_date_gt,omitempty" json:"start_date_gt,omitempty"`
+	StartDateLte   *time.Time `form:"start_date_lte,omitempty" json:"start_date_lte,omitempty"`
+	StartDateLt    *time.Time `form:"start_date_lt,omitempty" json:"start_date_lt,omitempty"`
+	EndDateGte     *time.Time `form:"end_date_gte,omitempty" json:"end_date_gte,omitempty"`
+	EndDateGt      *time.Time `form:"end_date_gt,omitempty" json:"end_date_gt,omitempty"`
+	EndDateLte     *time.Time `form:"end_date_lte,omitempty" json:"end_date_lte,omitempty"`
+	EndDateLt      *time.Time `form:"end_date_lt,omitempty" json:"end_date_lt,omitempty"`
+	UpdatedAtGte   *time.Time `form:"updated_at_gte,omitempty" json:"updated_at_gte,omitempty"`
+	UpdatedAtGt    *time.Time `form:"updated_at_gt,omitempty" json:"updated_at_gt,omitempty"`
+	UpdatedAtLte   *time.Time `form:"updated_at_lte,omitempty" json:"updated_at_lte,omitempty"`
+	UpdatedAtLt    *time.Time `form:"updated_at_lt,omitempty" json:"updated_at_lt,omitempty"`
+	DurationGte    *float32   `form:"duration_gte,omitempty" json:"duration_gte,omitempty"`
+	DurationGt     *float32   `form:"duration_gt,omitempty" json:"duration_gt,omitempty"`
+	DurationLte    *float32   `form:"duration_lte,omitempty" json:"duration_lte,omitempty"`
+	DurationLt     *float32   `form:"duration_lt,omitempty" json:"duration_lt,omitempty"`
+
+	// TaskDisplayNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	TaskDisplayNamePattern *string `form:"task_display_name_pattern,omitempty" json:"task_display_name_pattern,omitempty"`
+
+	// TaskGroupId Filter by exact task group ID. Returns all tasks within the specified task group.
+	TaskGroupId *string `form:"task_group_id,omitempty" json:"task_group_id,omitempty"`
+
+	// DagIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagIdPattern *string `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
+
+	// RunIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	RunIdPattern *string   `form:"run_id_pattern,omitempty" json:"run_id_pattern,omitempty"`
+	State        *[]string `form:"state,omitempty" json:"state,omitempty"`
+	Pool         *[]string `form:"pool,omitempty" json:"pool,omitempty"`
+
+	// PoolNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	PoolNamePattern *string   `form:"pool_name_pattern,omitempty" json:"pool_name_pattern,omitempty"`
+	Queue           *[]string `form:"queue,omitempty" json:"queue,omitempty"`
+
+	// QueueNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	QueueNamePattern *string   `form:"queue_name_pattern,omitempty" json:"queue_name_pattern,omitempty"`
+	Executor         *[]string `form:"executor,omitempty" json:"executor,omitempty"`
+	VersionNumber    *[]int    `form:"version_number,omitempty" json:"version_number,omitempty"`
+	TryNumber        *[]int    `form:"try_number,omitempty" json:"try_number,omitempty"`
+	Operator         *[]string `form:"operator,omitempty" json:"operator,omitempty"`
+
+	// OperatorNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	OperatorNamePattern *string `form:"operator_name_pattern,omitempty" json:"operator_name_pattern,omitempty"`
+	MapIndex            *[]int  `form:"map_index,omitempty" json:"map_index,omitempty"`
+	Limit               *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset              *int    `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, state, duration, start_date, end_date, map_index, try_number, logical_date, run_after, data_interval_start, data_interval_end, rendered_map_index, operator, logical_date, run_after, data_interval_start, data_interval_end`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
 }
 
 // GetTaskInstancesBatchParamsDagId defines parameters for GetTaskInstancesBatch.
@@ -2046,6 +2653,11 @@ type GetTaskInstancesBatchParamsDagId string
 
 // GetTaskInstancesBatchParamsDagRunId defines parameters for GetTaskInstancesBatch.
 type GetTaskInstancesBatchParamsDagRunId string
+
+// DeleteTaskInstanceParams defines parameters for DeleteTaskInstance.
+type DeleteTaskInstanceParams struct {
+	MapIndex *int `form:"map_index,omitempty" json:"map_index,omitempty"`
+}
 
 // PatchTaskInstanceParams defines parameters for PatchTaskInstance.
 type PatchTaskInstanceParams struct {
@@ -2064,6 +2676,11 @@ type PatchTaskInstanceDryRunParams struct {
 	UpdateMask *[]string `form:"update_mask,omitempty" json:"update_mask,omitempty"`
 }
 
+// GetExternalLogUrlParams defines parameters for GetExternalLogUrl.
+type GetExternalLogUrlParams struct {
+	MapIndex *int `form:"map_index,omitempty" json:"map_index,omitempty"`
+}
+
 // GetExtraLinksParams defines parameters for GetExtraLinks.
 type GetExtraLinksParams struct {
 	MapIndex *int `form:"map_index,omitempty" json:"map_index,omitempty"`
@@ -2072,25 +2689,51 @@ type GetExtraLinksParams struct {
 // GetMappedTaskInstancesParams defines parameters for GetMappedTaskInstances.
 type GetMappedTaskInstancesParams struct {
 	RunAfterGte    *time.Time `form:"run_after_gte,omitempty" json:"run_after_gte,omitempty"`
+	RunAfterGt     *time.Time `form:"run_after_gt,omitempty" json:"run_after_gt,omitempty"`
 	RunAfterLte    *time.Time `form:"run_after_lte,omitempty" json:"run_after_lte,omitempty"`
+	RunAfterLt     *time.Time `form:"run_after_lt,omitempty" json:"run_after_lt,omitempty"`
 	LogicalDateGte *time.Time `form:"logical_date_gte,omitempty" json:"logical_date_gte,omitempty"`
+	LogicalDateGt  *time.Time `form:"logical_date_gt,omitempty" json:"logical_date_gt,omitempty"`
 	LogicalDateLte *time.Time `form:"logical_date_lte,omitempty" json:"logical_date_lte,omitempty"`
+	LogicalDateLt  *time.Time `form:"logical_date_lt,omitempty" json:"logical_date_lt,omitempty"`
 	StartDateGte   *time.Time `form:"start_date_gte,omitempty" json:"start_date_gte,omitempty"`
+	StartDateGt    *time.Time `form:"start_date_gt,omitempty" json:"start_date_gt,omitempty"`
 	StartDateLte   *time.Time `form:"start_date_lte,omitempty" json:"start_date_lte,omitempty"`
+	StartDateLt    *time.Time `form:"start_date_lt,omitempty" json:"start_date_lt,omitempty"`
 	EndDateGte     *time.Time `form:"end_date_gte,omitempty" json:"end_date_gte,omitempty"`
+	EndDateGt      *time.Time `form:"end_date_gt,omitempty" json:"end_date_gt,omitempty"`
 	EndDateLte     *time.Time `form:"end_date_lte,omitempty" json:"end_date_lte,omitempty"`
+	EndDateLt      *time.Time `form:"end_date_lt,omitempty" json:"end_date_lt,omitempty"`
 	UpdatedAtGte   *time.Time `form:"updated_at_gte,omitempty" json:"updated_at_gte,omitempty"`
+	UpdatedAtGt    *time.Time `form:"updated_at_gt,omitempty" json:"updated_at_gt,omitempty"`
 	UpdatedAtLte   *time.Time `form:"updated_at_lte,omitempty" json:"updated_at_lte,omitempty"`
+	UpdatedAtLt    *time.Time `form:"updated_at_lt,omitempty" json:"updated_at_lt,omitempty"`
 	DurationGte    *float32   `form:"duration_gte,omitempty" json:"duration_gte,omitempty"`
+	DurationGt     *float32   `form:"duration_gt,omitempty" json:"duration_gt,omitempty"`
 	DurationLte    *float32   `form:"duration_lte,omitempty" json:"duration_lte,omitempty"`
+	DurationLt     *float32   `form:"duration_lt,omitempty" json:"duration_lt,omitempty"`
 	State          *[]string  `form:"state,omitempty" json:"state,omitempty"`
 	Pool           *[]string  `form:"pool,omitempty" json:"pool,omitempty"`
-	Queue          *[]string  `form:"queue,omitempty" json:"queue,omitempty"`
-	Executor       *[]string  `form:"executor,omitempty" json:"executor,omitempty"`
-	VersionNumber  *[]int     `form:"version_number,omitempty" json:"version_number,omitempty"`
-	Limit          *int       `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset         *int       `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy        *string    `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// PoolNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	PoolNamePattern *string   `form:"pool_name_pattern,omitempty" json:"pool_name_pattern,omitempty"`
+	Queue           *[]string `form:"queue,omitempty" json:"queue,omitempty"`
+
+	// QueueNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	QueueNamePattern *string   `form:"queue_name_pattern,omitempty" json:"queue_name_pattern,omitempty"`
+	Executor         *[]string `form:"executor,omitempty" json:"executor,omitempty"`
+	VersionNumber    *[]int    `form:"version_number,omitempty" json:"version_number,omitempty"`
+	TryNumber        *[]int    `form:"try_number,omitempty" json:"try_number,omitempty"`
+	Operator         *[]string `form:"operator,omitempty" json:"operator,omitempty"`
+
+	// OperatorNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	OperatorNamePattern *string `form:"operator_name_pattern,omitempty" json:"operator_name_pattern,omitempty"`
+	MapIndex            *[]int  `form:"map_index,omitempty" json:"map_index,omitempty"`
+	Limit               *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset              *int    `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, state, duration, start_date, end_date, map_index, try_number, logical_date, run_after, data_interval_start, data_interval_end, rendered_map_index, operator, run_after, logical_date, data_interval_start, data_interval_end`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
 }
 
 // GetLogParams defines parameters for GetLog.
@@ -2120,6 +2763,32 @@ type GetXcomEntriesParams struct {
 	MapIndex *int    `form:"map_index,omitempty" json:"map_index,omitempty"`
 	Limit    *int    `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset   *int    `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// XcomKeyPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	XcomKeyPattern *string `form:"xcom_key_pattern,omitempty" json:"xcom_key_pattern,omitempty"`
+
+	// DagDisplayNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagDisplayNamePattern *string `form:"dag_display_name_pattern,omitempty" json:"dag_display_name_pattern,omitempty"`
+
+	// RunIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	RunIdPattern *string `form:"run_id_pattern,omitempty" json:"run_id_pattern,omitempty"`
+
+	// TaskIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	TaskIdPattern  *string    `form:"task_id_pattern,omitempty" json:"task_id_pattern,omitempty"`
+	MapIndexFilter *int       `form:"map_index_filter,omitempty" json:"map_index_filter,omitempty"`
+	LogicalDateGte *time.Time `form:"logical_date_gte,omitempty" json:"logical_date_gte,omitempty"`
+	LogicalDateGt  *time.Time `form:"logical_date_gt,omitempty" json:"logical_date_gt,omitempty"`
+	LogicalDateLte *time.Time `form:"logical_date_lte,omitempty" json:"logical_date_lte,omitempty"`
+	LogicalDateLt  *time.Time `form:"logical_date_lt,omitempty" json:"logical_date_lt,omitempty"`
+	RunAfterGte    *time.Time `form:"run_after_gte,omitempty" json:"run_after_gte,omitempty"`
+	RunAfterGt     *time.Time `form:"run_after_gt,omitempty" json:"run_after_gt,omitempty"`
+	RunAfterLte    *time.Time `form:"run_after_lte,omitempty" json:"run_after_lte,omitempty"`
+	RunAfterLt     *time.Time `form:"run_after_lt,omitempty" json:"run_after_lt,omitempty"`
+}
+
+// DeleteXcomEntryParams defines parameters for DeleteXcomEntry.
+type DeleteXcomEntryParams struct {
+	MapIndex *int `form:"map_index,omitempty" json:"map_index,omitempty"`
 }
 
 // GetXcomEntryParams defines parameters for GetXcomEntry.
@@ -2144,6 +2813,15 @@ type PatchTaskInstanceDryRunByMapIndexParams struct {
 	UpdateMask *[]string `form:"update_mask,omitempty" json:"update_mask,omitempty"`
 }
 
+// WaitDagRunUntilFinishedParams defines parameters for WaitDagRunUntilFinished.
+type WaitDagRunUntilFinishedParams struct {
+	// Interval Seconds to wait between dag run state checks
+	Interval float32 `form:"interval" json:"interval"`
+
+	// Result Collect result XCom from task. Can be set multiple times.
+	Result *[]string `form:"result,omitempty" json:"result,omitempty"`
+}
+
 // GetDagVersionsParams defines parameters for GetDagVersions.
 type GetDagVersionsParams struct {
 	Limit         *int    `form:"limit,omitempty" json:"limit,omitempty"`
@@ -2151,7 +2829,9 @@ type GetDagVersionsParams struct {
 	VersionNumber *int    `form:"version_number,omitempty" json:"version_number,omitempty"`
 	BundleName    *string `form:"bundle_name,omitempty" json:"bundle_name,omitempty"`
 	BundleVersion *string `form:"bundle_version,omitempty" json:"bundle_version,omitempty"`
-	OrderBy       *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, version_number, bundle_name, bundle_version`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
 }
 
 // GetTasksParams defines parameters for GetTasks.
@@ -2161,9 +2841,11 @@ type GetTasksParams struct {
 
 // GetEventLogsParams defines parameters for GetEventLogs.
 type GetEventLogsParams struct {
-	Limit          *int       `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset         *int       `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy        *string    `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, dttm, dag_id, task_id, run_id, event, logical_date, owner, extra, when, event_log_id`
+	OrderBy        *[]string  `form:"order_by,omitempty" json:"order_by,omitempty"`
 	DagId          *string    `form:"dag_id,omitempty" json:"dag_id,omitempty"`
 	TaskId         *string    `form:"task_id,omitempty" json:"task_id,omitempty"`
 	RunId          *string    `form:"run_id,omitempty" json:"run_id,omitempty"`
@@ -2175,29 +2857,55 @@ type GetEventLogsParams struct {
 	IncludedEvents *[]string  `form:"included_events,omitempty" json:"included_events,omitempty"`
 	Before         *time.Time `form:"before,omitempty" json:"before,omitempty"`
 	After          *time.Time `form:"after,omitempty" json:"after,omitempty"`
+
+	// DagIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	DagIdPattern *string `form:"dag_id_pattern,omitempty" json:"dag_id_pattern,omitempty"`
+
+	// TaskIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	TaskIdPattern *string `form:"task_id_pattern,omitempty" json:"task_id_pattern,omitempty"`
+
+	// RunIdPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	RunIdPattern *string `form:"run_id_pattern,omitempty" json:"run_id_pattern,omitempty"`
+
+	// OwnerPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	OwnerPattern *string `form:"owner_pattern,omitempty" json:"owner_pattern,omitempty"`
+
+	// EventPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	EventPattern *string `form:"event_pattern,omitempty" json:"event_pattern,omitempty"`
 }
 
 // GetImportErrorsParams defines parameters for GetImportErrors.
 type GetImportErrorsParams struct {
-	Limit   *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset  *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, timestamp, filename, bundle_name, stacktrace, import_error_id`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// FilenamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
+	FilenamePattern *string `form:"filename_pattern,omitempty" json:"filename_pattern,omitempty"`
 }
 
 // GetJobsParams defines parameters for GetJobs.
 type GetJobsParams struct {
-	IsAlive       *bool      `form:"is_alive,omitempty" json:"is_alive,omitempty"`
-	StartDateGte  *time.Time `form:"start_date_gte,omitempty" json:"start_date_gte,omitempty"`
-	StartDateLte  *time.Time `form:"start_date_lte,omitempty" json:"start_date_lte,omitempty"`
-	EndDateGte    *time.Time `form:"end_date_gte,omitempty" json:"end_date_gte,omitempty"`
-	EndDateLte    *time.Time `form:"end_date_lte,omitempty" json:"end_date_lte,omitempty"`
-	Limit         *int       `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset        *int       `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy       *string    `form:"order_by,omitempty" json:"order_by,omitempty"`
-	JobState      *string    `form:"job_state,omitempty" json:"job_state,omitempty"`
-	JobType       *string    `form:"job_type,omitempty" json:"job_type,omitempty"`
-	Hostname      *string    `form:"hostname,omitempty" json:"hostname,omitempty"`
-	ExecutorClass *string    `form:"executor_class,omitempty" json:"executor_class,omitempty"`
+	IsAlive      *bool      `form:"is_alive,omitempty" json:"is_alive,omitempty"`
+	StartDateGte *time.Time `form:"start_date_gte,omitempty" json:"start_date_gte,omitempty"`
+	StartDateGt  *time.Time `form:"start_date_gt,omitempty" json:"start_date_gt,omitempty"`
+	StartDateLte *time.Time `form:"start_date_lte,omitempty" json:"start_date_lte,omitempty"`
+	StartDateLt  *time.Time `form:"start_date_lt,omitempty" json:"start_date_lt,omitempty"`
+	EndDateGte   *time.Time `form:"end_date_gte,omitempty" json:"end_date_gte,omitempty"`
+	EndDateGt    *time.Time `form:"end_date_gt,omitempty" json:"end_date_gt,omitempty"`
+	EndDateLte   *time.Time `form:"end_date_lte,omitempty" json:"end_date_lte,omitempty"`
+	EndDateLt    *time.Time `form:"end_date_lt,omitempty" json:"end_date_lt,omitempty"`
+	Limit        *int       `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset       *int       `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, dag_id, state, job_type, start_date, end_date, latest_heartbeat, executor_class, hostname, unixname`
+	OrderBy       *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	JobState      *string   `form:"job_state,omitempty" json:"job_state,omitempty"`
+	JobType       *string   `form:"job_type,omitempty" json:"job_type,omitempty"`
+	Hostname      *string   `form:"hostname,omitempty" json:"hostname,omitempty"`
+	ExecutorClass *string   `form:"executor_class,omitempty" json:"executor_class,omitempty"`
 }
 
 // GetPluginsParams defines parameters for GetPlugins.
@@ -2208,9 +2916,13 @@ type GetPluginsParams struct {
 
 // GetPoolsParams defines parameters for GetPools.
 type GetPoolsParams struct {
-	Limit           *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset          *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy         *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `id, pool, name`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// PoolNamePattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
 	PoolNamePattern *string `form:"pool_name_pattern,omitempty" json:"pool_name_pattern,omitempty"`
 }
 
@@ -2227,9 +2939,13 @@ type GetProvidersParams struct {
 
 // GetVariablesParams defines parameters for GetVariables.
 type GetVariablesParams struct {
-	Limit              *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset             *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	OrderBy            *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OrderBy Attributes to order by, multi criteria sort is supported. Prefix with `-` for descending order. Supported attributes: `key, id, _val, description, is_encrypted, team_name`
+	OrderBy *[]string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// VariableKeyPattern SQL LIKE expression — use `%` / `_` wildcards (e.g. `%customer_%`). or the pipe `|` operator for OR logic (e.g. `dag1 | dag2`). Regular expressions are **not** supported.
 	VariableKeyPattern *string `form:"variable_key_pattern,omitempty" json:"variable_key_pattern,omitempty"`
 }
 
@@ -2280,6 +2996,9 @@ type PatchDagRunJSONRequestBody = DAGRunPatchBody
 // ClearDagRunJSONRequestBody defines body for ClearDagRun for application/json ContentType.
 type ClearDagRunJSONRequestBody = DAGRunClearBody
 
+// BulkTaskInstancesJSONRequestBody defines body for BulkTaskInstances for application/json ContentType.
+type BulkTaskInstancesJSONRequestBody = BulkBodyBulkTaskInstanceBody
+
 // GetTaskInstancesBatchJSONRequestBody defines body for GetTaskInstancesBatch for application/json ContentType.
 type GetTaskInstancesBatchJSONRequestBody = TaskInstancesBatchBody
 
@@ -2300,6 +3019,9 @@ type PatchTaskInstanceByMapIndexJSONRequestBody = PatchTaskInstanceBody
 
 // PatchTaskInstanceDryRunByMapIndexJSONRequestBody defines body for PatchTaskInstanceDryRunByMapIndex for application/json ContentType.
 type PatchTaskInstanceDryRunByMapIndexJSONRequestBody = PatchTaskInstanceBody
+
+// UpdateHitlDetailJSONRequestBody defines body for UpdateHitlDetail for application/json ContentType.
+type UpdateHitlDetailJSONRequestBody = UpdateHITLDetailPayload
 
 // BulkPoolsJSONRequestBody defines body for BulkPools for application/json ContentType.
 type BulkPoolsJSONRequestBody = BulkBodyPoolBody
@@ -2394,11 +3116,9 @@ func (a AppBuilderMenuItemResponse) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	if a.Href != nil {
-		object["href"], err = json.Marshal(a.Href)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'href': %w", err)
-		}
+	object["href"], err = json.Marshal(a.Href)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'href': %w", err)
 	}
 
 	object["name"], err = json.Marshal(a.Name)
@@ -2516,6 +3236,160 @@ func (a AppBuilderViewResponse) MarshalJSON() ([]byte, error) {
 		object["view"], err = json.Marshal(a.View)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'view': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for ExternalViewResponse. Returns the specified
+// element and whether it was found
+func (a ExternalViewResponse) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for ExternalViewResponse
+func (a *ExternalViewResponse) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for ExternalViewResponse to handle AdditionalProperties
+func (a *ExternalViewResponse) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["category"]; found {
+		err = json.Unmarshal(raw, &a.Category)
+		if err != nil {
+			return fmt.Errorf("error reading 'category': %w", err)
+		}
+		delete(object, "category")
+	}
+
+	if raw, found := object["destination"]; found {
+		err = json.Unmarshal(raw, &a.Destination)
+		if err != nil {
+			return fmt.Errorf("error reading 'destination': %w", err)
+		}
+		delete(object, "destination")
+	}
+
+	if raw, found := object["href"]; found {
+		err = json.Unmarshal(raw, &a.Href)
+		if err != nil {
+			return fmt.Errorf("error reading 'href': %w", err)
+		}
+		delete(object, "href")
+	}
+
+	if raw, found := object["icon"]; found {
+		err = json.Unmarshal(raw, &a.Icon)
+		if err != nil {
+			return fmt.Errorf("error reading 'icon': %w", err)
+		}
+		delete(object, "icon")
+	}
+
+	if raw, found := object["icon_dark_mode"]; found {
+		err = json.Unmarshal(raw, &a.IconDarkMode)
+		if err != nil {
+			return fmt.Errorf("error reading 'icon_dark_mode': %w", err)
+		}
+		delete(object, "icon_dark_mode")
+	}
+
+	if raw, found := object["name"]; found {
+		err = json.Unmarshal(raw, &a.Name)
+		if err != nil {
+			return fmt.Errorf("error reading 'name': %w", err)
+		}
+		delete(object, "name")
+	}
+
+	if raw, found := object["url_route"]; found {
+		err = json.Unmarshal(raw, &a.UrlRoute)
+		if err != nil {
+			return fmt.Errorf("error reading 'url_route': %w", err)
+		}
+		delete(object, "url_route")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for ExternalViewResponse to handle AdditionalProperties
+func (a ExternalViewResponse) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Category != nil {
+		object["category"], err = json.Marshal(a.Category)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'category': %w", err)
+		}
+	}
+
+	if a.Destination != nil {
+		object["destination"], err = json.Marshal(a.Destination)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'destination': %w", err)
+		}
+	}
+
+	object["href"], err = json.Marshal(a.Href)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'href': %w", err)
+	}
+
+	if a.Icon != nil {
+		object["icon"], err = json.Marshal(a.Icon)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'icon': %w", err)
+		}
+	}
+
+	if a.IconDarkMode != nil {
+		object["icon_dark_mode"], err = json.Marshal(a.IconDarkMode)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'icon_dark_mode': %w", err)
+		}
+	}
+
+	object["name"], err = json.Marshal(a.Name)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'name': %w", err)
+	}
+
+	if a.UrlRoute != nil {
+		object["url_route"], err = json.Marshal(a.UrlRoute)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'url_route': %w", err)
 		}
 	}
 
@@ -2699,6 +3573,160 @@ func (a FastAPIRootMiddlewareResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(object)
 }
 
+// Getter for additional properties for ReactAppResponse. Returns the specified
+// element and whether it was found
+func (a ReactAppResponse) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for ReactAppResponse
+func (a *ReactAppResponse) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for ReactAppResponse to handle AdditionalProperties
+func (a *ReactAppResponse) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["bundle_url"]; found {
+		err = json.Unmarshal(raw, &a.BundleUrl)
+		if err != nil {
+			return fmt.Errorf("error reading 'bundle_url': %w", err)
+		}
+		delete(object, "bundle_url")
+	}
+
+	if raw, found := object["category"]; found {
+		err = json.Unmarshal(raw, &a.Category)
+		if err != nil {
+			return fmt.Errorf("error reading 'category': %w", err)
+		}
+		delete(object, "category")
+	}
+
+	if raw, found := object["destination"]; found {
+		err = json.Unmarshal(raw, &a.Destination)
+		if err != nil {
+			return fmt.Errorf("error reading 'destination': %w", err)
+		}
+		delete(object, "destination")
+	}
+
+	if raw, found := object["icon"]; found {
+		err = json.Unmarshal(raw, &a.Icon)
+		if err != nil {
+			return fmt.Errorf("error reading 'icon': %w", err)
+		}
+		delete(object, "icon")
+	}
+
+	if raw, found := object["icon_dark_mode"]; found {
+		err = json.Unmarshal(raw, &a.IconDarkMode)
+		if err != nil {
+			return fmt.Errorf("error reading 'icon_dark_mode': %w", err)
+		}
+		delete(object, "icon_dark_mode")
+	}
+
+	if raw, found := object["name"]; found {
+		err = json.Unmarshal(raw, &a.Name)
+		if err != nil {
+			return fmt.Errorf("error reading 'name': %w", err)
+		}
+		delete(object, "name")
+	}
+
+	if raw, found := object["url_route"]; found {
+		err = json.Unmarshal(raw, &a.UrlRoute)
+		if err != nil {
+			return fmt.Errorf("error reading 'url_route': %w", err)
+		}
+		delete(object, "url_route")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for ReactAppResponse to handle AdditionalProperties
+func (a ReactAppResponse) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["bundle_url"], err = json.Marshal(a.BundleUrl)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'bundle_url': %w", err)
+	}
+
+	if a.Category != nil {
+		object["category"], err = json.Marshal(a.Category)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'category': %w", err)
+		}
+	}
+
+	if a.Destination != nil {
+		object["destination"], err = json.Marshal(a.Destination)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'destination': %w", err)
+		}
+	}
+
+	if a.Icon != nil {
+		object["icon"], err = json.Marshal(a.Icon)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'icon': %w", err)
+		}
+	}
+
+	if a.IconDarkMode != nil {
+		object["icon_dark_mode"], err = json.Marshal(a.IconDarkMode)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'icon_dark_mode': %w", err)
+		}
+	}
+
+	object["name"], err = json.Marshal(a.Name)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'name': %w", err)
+	}
+
+	if a.UrlRoute != nil {
+		object["url_route"], err = json.Marshal(a.UrlRoute)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'url_route': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
 // Getter for additional properties for StructuredLogMessage. Returns the specified
 // element and whether it was found
 func (a StructuredLogMessage) Get(fieldName string) (value interface{}, found bool) {
@@ -2778,6 +3806,94 @@ func (a StructuredLogMessage) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
+}
+
+// AsBulkCreateActionBulkTaskInstanceBody returns the union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item as a BulkCreateActionBulkTaskInstanceBody
+func (t BulkBodyBulkTaskInstanceBody_Actions_Item) AsBulkCreateActionBulkTaskInstanceBody() (BulkCreateActionBulkTaskInstanceBody, error) {
+	var body BulkCreateActionBulkTaskInstanceBody
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkCreateActionBulkTaskInstanceBody overwrites any union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item as the provided BulkCreateActionBulkTaskInstanceBody
+func (t *BulkBodyBulkTaskInstanceBody_Actions_Item) FromBulkCreateActionBulkTaskInstanceBody(v BulkCreateActionBulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkCreateActionBulkTaskInstanceBody performs a merge with any union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item, using the provided BulkCreateActionBulkTaskInstanceBody
+func (t *BulkBodyBulkTaskInstanceBody_Actions_Item) MergeBulkCreateActionBulkTaskInstanceBody(v BulkCreateActionBulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBulkUpdateActionBulkTaskInstanceBody returns the union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item as a BulkUpdateActionBulkTaskInstanceBody
+func (t BulkBodyBulkTaskInstanceBody_Actions_Item) AsBulkUpdateActionBulkTaskInstanceBody() (BulkUpdateActionBulkTaskInstanceBody, error) {
+	var body BulkUpdateActionBulkTaskInstanceBody
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkUpdateActionBulkTaskInstanceBody overwrites any union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item as the provided BulkUpdateActionBulkTaskInstanceBody
+func (t *BulkBodyBulkTaskInstanceBody_Actions_Item) FromBulkUpdateActionBulkTaskInstanceBody(v BulkUpdateActionBulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkUpdateActionBulkTaskInstanceBody performs a merge with any union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item, using the provided BulkUpdateActionBulkTaskInstanceBody
+func (t *BulkBodyBulkTaskInstanceBody_Actions_Item) MergeBulkUpdateActionBulkTaskInstanceBody(v BulkUpdateActionBulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBulkDeleteActionBulkTaskInstanceBody returns the union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item as a BulkDeleteActionBulkTaskInstanceBody
+func (t BulkBodyBulkTaskInstanceBody_Actions_Item) AsBulkDeleteActionBulkTaskInstanceBody() (BulkDeleteActionBulkTaskInstanceBody, error) {
+	var body BulkDeleteActionBulkTaskInstanceBody
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkDeleteActionBulkTaskInstanceBody overwrites any union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item as the provided BulkDeleteActionBulkTaskInstanceBody
+func (t *BulkBodyBulkTaskInstanceBody_Actions_Item) FromBulkDeleteActionBulkTaskInstanceBody(v BulkDeleteActionBulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkDeleteActionBulkTaskInstanceBody performs a merge with any union data inside the BulkBodyBulkTaskInstanceBody_Actions_Item, using the provided BulkDeleteActionBulkTaskInstanceBody
+func (t *BulkBodyBulkTaskInstanceBody_Actions_Item) MergeBulkDeleteActionBulkTaskInstanceBody(v BulkDeleteActionBulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BulkBodyBulkTaskInstanceBody_Actions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BulkBodyBulkTaskInstanceBody_Actions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }
 
 // AsBulkCreateActionConnectionBody returns the union data inside the BulkBodyConnectionBody_Actions_Item as a BulkCreateActionConnectionBody
@@ -3040,6 +4156,254 @@ func (t BulkBodyVariableBody_Actions_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *BulkBodyVariableBody_Actions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBulkDeleteActionBulkTaskInstanceBodyEntities0 returns the union data inside the BulkDeleteActionBulkTaskInstanceBody_Entities_Item as a BulkDeleteActionBulkTaskInstanceBodyEntities0
+func (t BulkDeleteActionBulkTaskInstanceBody_Entities_Item) AsBulkDeleteActionBulkTaskInstanceBodyEntities0() (BulkDeleteActionBulkTaskInstanceBodyEntities0, error) {
+	var body BulkDeleteActionBulkTaskInstanceBodyEntities0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkDeleteActionBulkTaskInstanceBodyEntities0 overwrites any union data inside the BulkDeleteActionBulkTaskInstanceBody_Entities_Item as the provided BulkDeleteActionBulkTaskInstanceBodyEntities0
+func (t *BulkDeleteActionBulkTaskInstanceBody_Entities_Item) FromBulkDeleteActionBulkTaskInstanceBodyEntities0(v BulkDeleteActionBulkTaskInstanceBodyEntities0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkDeleteActionBulkTaskInstanceBodyEntities0 performs a merge with any union data inside the BulkDeleteActionBulkTaskInstanceBody_Entities_Item, using the provided BulkDeleteActionBulkTaskInstanceBodyEntities0
+func (t *BulkDeleteActionBulkTaskInstanceBody_Entities_Item) MergeBulkDeleteActionBulkTaskInstanceBodyEntities0(v BulkDeleteActionBulkTaskInstanceBodyEntities0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBulkTaskInstanceBody returns the union data inside the BulkDeleteActionBulkTaskInstanceBody_Entities_Item as a BulkTaskInstanceBody
+func (t BulkDeleteActionBulkTaskInstanceBody_Entities_Item) AsBulkTaskInstanceBody() (BulkTaskInstanceBody, error) {
+	var body BulkTaskInstanceBody
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkTaskInstanceBody overwrites any union data inside the BulkDeleteActionBulkTaskInstanceBody_Entities_Item as the provided BulkTaskInstanceBody
+func (t *BulkDeleteActionBulkTaskInstanceBody_Entities_Item) FromBulkTaskInstanceBody(v BulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkTaskInstanceBody performs a merge with any union data inside the BulkDeleteActionBulkTaskInstanceBody_Entities_Item, using the provided BulkTaskInstanceBody
+func (t *BulkDeleteActionBulkTaskInstanceBody_Entities_Item) MergeBulkTaskInstanceBody(v BulkTaskInstanceBody) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BulkDeleteActionBulkTaskInstanceBody_Entities_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BulkDeleteActionBulkTaskInstanceBody_Entities_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBulkDeleteActionConnectionBodyEntities0 returns the union data inside the BulkDeleteActionConnectionBody_Entities_Item as a BulkDeleteActionConnectionBodyEntities0
+func (t BulkDeleteActionConnectionBody_Entities_Item) AsBulkDeleteActionConnectionBodyEntities0() (BulkDeleteActionConnectionBodyEntities0, error) {
+	var body BulkDeleteActionConnectionBodyEntities0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkDeleteActionConnectionBodyEntities0 overwrites any union data inside the BulkDeleteActionConnectionBody_Entities_Item as the provided BulkDeleteActionConnectionBodyEntities0
+func (t *BulkDeleteActionConnectionBody_Entities_Item) FromBulkDeleteActionConnectionBodyEntities0(v BulkDeleteActionConnectionBodyEntities0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkDeleteActionConnectionBodyEntities0 performs a merge with any union data inside the BulkDeleteActionConnectionBody_Entities_Item, using the provided BulkDeleteActionConnectionBodyEntities0
+func (t *BulkDeleteActionConnectionBody_Entities_Item) MergeBulkDeleteActionConnectionBodyEntities0(v BulkDeleteActionConnectionBodyEntities0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsConnectionBody returns the union data inside the BulkDeleteActionConnectionBody_Entities_Item as a ConnectionBody
+func (t BulkDeleteActionConnectionBody_Entities_Item) AsConnectionBody() (ConnectionBody, error) {
+	var body ConnectionBody
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromConnectionBody overwrites any union data inside the BulkDeleteActionConnectionBody_Entities_Item as the provided ConnectionBody
+func (t *BulkDeleteActionConnectionBody_Entities_Item) FromConnectionBody(v ConnectionBody) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeConnectionBody performs a merge with any union data inside the BulkDeleteActionConnectionBody_Entities_Item, using the provided ConnectionBody
+func (t *BulkDeleteActionConnectionBody_Entities_Item) MergeConnectionBody(v ConnectionBody) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BulkDeleteActionConnectionBody_Entities_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BulkDeleteActionConnectionBody_Entities_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBulkDeleteActionPoolBodyEntities0 returns the union data inside the BulkDeleteActionPoolBody_Entities_Item as a BulkDeleteActionPoolBodyEntities0
+func (t BulkDeleteActionPoolBody_Entities_Item) AsBulkDeleteActionPoolBodyEntities0() (BulkDeleteActionPoolBodyEntities0, error) {
+	var body BulkDeleteActionPoolBodyEntities0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkDeleteActionPoolBodyEntities0 overwrites any union data inside the BulkDeleteActionPoolBody_Entities_Item as the provided BulkDeleteActionPoolBodyEntities0
+func (t *BulkDeleteActionPoolBody_Entities_Item) FromBulkDeleteActionPoolBodyEntities0(v BulkDeleteActionPoolBodyEntities0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkDeleteActionPoolBodyEntities0 performs a merge with any union data inside the BulkDeleteActionPoolBody_Entities_Item, using the provided BulkDeleteActionPoolBodyEntities0
+func (t *BulkDeleteActionPoolBody_Entities_Item) MergeBulkDeleteActionPoolBodyEntities0(v BulkDeleteActionPoolBodyEntities0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPoolBody returns the union data inside the BulkDeleteActionPoolBody_Entities_Item as a PoolBody
+func (t BulkDeleteActionPoolBody_Entities_Item) AsPoolBody() (PoolBody, error) {
+	var body PoolBody
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPoolBody overwrites any union data inside the BulkDeleteActionPoolBody_Entities_Item as the provided PoolBody
+func (t *BulkDeleteActionPoolBody_Entities_Item) FromPoolBody(v PoolBody) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePoolBody performs a merge with any union data inside the BulkDeleteActionPoolBody_Entities_Item, using the provided PoolBody
+func (t *BulkDeleteActionPoolBody_Entities_Item) MergePoolBody(v PoolBody) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BulkDeleteActionPoolBody_Entities_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BulkDeleteActionPoolBody_Entities_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsBulkDeleteActionVariableBodyEntities0 returns the union data inside the BulkDeleteActionVariableBody_Entities_Item as a BulkDeleteActionVariableBodyEntities0
+func (t BulkDeleteActionVariableBody_Entities_Item) AsBulkDeleteActionVariableBodyEntities0() (BulkDeleteActionVariableBodyEntities0, error) {
+	var body BulkDeleteActionVariableBodyEntities0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBulkDeleteActionVariableBodyEntities0 overwrites any union data inside the BulkDeleteActionVariableBody_Entities_Item as the provided BulkDeleteActionVariableBodyEntities0
+func (t *BulkDeleteActionVariableBody_Entities_Item) FromBulkDeleteActionVariableBodyEntities0(v BulkDeleteActionVariableBodyEntities0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBulkDeleteActionVariableBodyEntities0 performs a merge with any union data inside the BulkDeleteActionVariableBody_Entities_Item, using the provided BulkDeleteActionVariableBodyEntities0
+func (t *BulkDeleteActionVariableBody_Entities_Item) MergeBulkDeleteActionVariableBodyEntities0(v BulkDeleteActionVariableBodyEntities0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsVariableBody returns the union data inside the BulkDeleteActionVariableBody_Entities_Item as a VariableBody
+func (t BulkDeleteActionVariableBody_Entities_Item) AsVariableBody() (VariableBody, error) {
+	var body VariableBody
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVariableBody overwrites any union data inside the BulkDeleteActionVariableBody_Entities_Item as the provided VariableBody
+func (t *BulkDeleteActionVariableBody_Entities_Item) FromVariableBody(v VariableBody) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeVariableBody performs a merge with any union data inside the BulkDeleteActionVariableBody_Entities_Item, using the provided VariableBody
+func (t *BulkDeleteActionVariableBody_Entities_Item) MergeVariableBody(v VariableBody) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t BulkDeleteActionVariableBody_Entities_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *BulkDeleteActionVariableBody_Entities_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

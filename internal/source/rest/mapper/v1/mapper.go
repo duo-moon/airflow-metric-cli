@@ -92,8 +92,8 @@ func DagRun(r *airflowv1.DAGRun) *model.DagRun {
 	if r.RunType != nil {
 		out.RunType = string(*r.RunType)
 	}
-	// v1 API omits updated_at — fall back to the latest known timestamp so
-	// LatestDagRunUpdate() still moves forward.
+	// v1 API omits updated_at — approximate with the latest known timestamp
+	// so the store's freshness watermark still moves forward.
 	out.UpdatedAt = latest(out.End, out.Start, out.LogicalDate)
 	return out
 }

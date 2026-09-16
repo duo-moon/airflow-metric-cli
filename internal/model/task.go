@@ -33,21 +33,6 @@ func (s TaskState) IsTerminal() bool {
 	return false
 }
 
-// IsWaiting reports whether the task is parked in some pre-run state and
-// contributes to the WAIT column.
-func (s TaskState) IsWaiting() bool {
-	switch s {
-	case TaskQueued, TaskScheduled, TaskDeferred, TaskUpForRetry, TaskUpForReschedule:
-		return true
-	}
-	return false
-}
-
-// IsFailed reports whether the task ended in a failed-like state.
-func (s TaskState) IsFailed() bool {
-	return s == TaskFailed || s == TaskUpstreamFailed
-}
-
 // TaskInstance is a single attempt of a task in a DAG run.
 type TaskInstance struct {
 	DagID     string
@@ -66,12 +51,6 @@ type TaskInstance struct {
 	Queue     string
 	Hostname  string
 }
-
-// IsRunning reports whether the task instance is actively executing.
-func (t TaskInstance) IsRunning() bool { return t.State == TaskRunning }
-
-// IsFailed reports whether the task ended in a failed state.
-func (t TaskInstance) IsFailed() bool { return t.State.IsFailed() }
 
 // TaskAttempt is one historical execution of a task instance. Airflow
 // bumps TryNumber on retries *and* on manual clears, so a task with

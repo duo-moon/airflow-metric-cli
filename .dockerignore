@@ -1,0 +1,27 @@
+# Build outputs
+bin/
+dist/
+
+# CI + editor
+.github/
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Local config / secrets — never bake into the image
+.env
+.env.local
+*.local.yaml
+
+# Everything the container never needs
+demo/
+README.md
+LICENSE
+.goreleaser.yaml
+.golangci.yml
+Makefile
+
+# Tests are compiled by `go test`, not `go build`, but they still bloat the
+# build context. Copy in only if you plan to run tests inside the image.
+**/*_test.go

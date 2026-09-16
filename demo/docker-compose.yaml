@@ -1,0 +1,250 @@
+# Local Airflow for e2e testing afmetric against both REST API dialects.
+#
+# Not production shape — LocalExecutor, single-node, throw-away secrets.
+# Just enough to expose a REST API with real DAG runs against a fixed
+# admin/admin login.
+#
+# Two profiles select which Airflow generation to run:
+#
+#   v2  →  apache/airflow 2.11.2, /api/v1 (Connexion, basic auth)
+#   v3  →  apache/airflow 3.2.0,  /api/v2 (FastAPI, JWT only)
+#
+# postgres has no profile and is always brought up. Only one Airflow
+# profile should be active at a time — different generations share the
+# same DB schema slot and will fight over it.
+#
+# Usage:
+#   docker compose -f demo/docker-compose.yaml --profile v2 up -d
+#   docker compose -f demo/docker-compose.yaml --profile v3 up -d
+#   # Makefile wraps this: `make demo-up` (v2) and `make demo-up-v3`.
+
+# ---- v2 (Airflow 2.x, /api/v1) -----------------------------------------
+x-airflow-v2-image: &airflow-v2-image apache/airflow:2.11.2-python3.12
+
+x-airflow-v2-env: &airflow-v2-env
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  # Fixed Fernet key so all Airflow services encrypt/decrypt Variables and
+  # Connections with the same secret. Generated once for this demo — do
+  # not reuse in production.
+  AIRFLOW__CORE__FERNET_KEY: "-s_sXHrBODfE-t81TSKHEcCuwUZWq1HGOO8038_J6aE="
+  # Shared Flask secret_key. Airflow webserver signs URLs it uses to
+  # fetch task logs from schedulers/triggerers — without a shared key
+  # those URLs come back 403 FORBIDDEN. Demo-only.
+  AIRFLOW__WEBSERVER__SECRET_KEY: "f7bce3c3e2f2b2215187aa0b8a84ac44b1bc41b896f6ae2290dedef53f45e441"
+  # Force FAB manager: only it mounts the stable REST API. Without this
+  # some 2.10.x setups fall back to SimpleAuthManager, and /api/v1/*
+  # endpoints silently 404.
+  AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
+  AIRFLOW__LOGGING__REMOTE_LOGGING: "False"
+
+# ---- v3 (Airflow 3.x, /api/v2) -----------------------------------------
+x-airflow-v3-image: &airflow-v3-image apache/airflow:3.2.0
+
+x-airflow-v3-env: &airflow-v3-env
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  AIRFLOW__CORE__FERNET_KEY: "-s_sXHrBODfE-t81TSKHEcCuwUZWq1HGOO8038_J6aE="
+  AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  # JWT is the only supported auth for /api/v2. Fixed secret so tokens
+  # issued via /auth/token stay valid across container restarts.
+  AIRFLOW__API_AUTH__JWT_SECRET: "afmetric-demo-jwt-secret-do-not-reuse-in-prod"
+  AIRFLOW__API_AUTH__JWT_ISSUER: "afmetric-demo"
+  # api-server needs to know where to reach the internal execution API
+  # (schedulers push task state back through it).
+  AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow-apiserver:8080/execution/"
+  # Pin remote logging off. Without this the api-server can try to fetch
+  # logs from an unconfigured remote store and 500 the /logs endpoint —
+  # v2 also pins it, keep the two profiles symmetric.
+  AIRFLOW__LOGGING__REMOTE_LOGGING: "False"
+
+# Bind-mounted DAG source directory. Edits in demo/dags/*.py are picked
+# up by the scheduler within DAG_DIR_LIST_INTERVAL (30s by default), no
+# container restart needed.
+#
+# `airflow_logs` is a *shared* named volume so all Airflow services (init,
+# scheduler, webserver/api-server, triggerer, dag-processor) see the same
+# /opt/airflow/logs. Without it the webserver/api-server reads its own
+# empty fs when serving past-try logs and every /tries N answer collapses
+# to the same "log not found" fallback — [ / ] navigation looks broken.
+# Only one profile runs at a time, so the volume is safe to share.
+x-airflow-volumes: &airflow-volumes
+  - ./dags:/opt/airflow/dags
+  - airflow_logs:/opt/airflow/logs
+
+services:
+  # ---- Shared infra ----------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: afmetric-postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ---- v2 stack --------------------------------------------------------
+  airflow-init:
+    image: *airflow-v2-image
+    container_name: afmetric-airflow-init
+    profiles: ["v2"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: *airflow-v2-env
+    volumes: *airflow-volumes
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        set -e
+        airflow db migrate
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com || true
+        # Pool used by demo/dags/pool_heavy.py to exercise the WAIT
+        # column and pool utilisation gauge in the TUI.
+        airflow pools set heavy_pool 2 "afmetric demo — heavy_pool"
+
+  airflow-webserver:
+    image: *airflow-v2-image
+    container_name: afmetric-airflow-web
+    profiles: ["v2"]
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    environment: *airflow-v2-env
+    volumes: *airflow-volumes
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health | grep -q healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  airflow-scheduler:
+    image: *airflow-v2-image
+    container_name: afmetric-airflow-scheduler
+    profiles: ["v2"]
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment: *airflow-v2-env
+    volumes: *airflow-volumes
+    command: scheduler
+
+  airflow-triggerer:
+    image: *airflow-v2-image
+    container_name: afmetric-airflow-triggerer
+    profiles: ["v2"]
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment: *airflow-v2-env
+    volumes: *airflow-volumes
+    command: triggerer
+
+  # ---- v3 stack --------------------------------------------------------
+  airflow-init-v3:
+    image: *airflow-v3-image
+    container_name: afmetric-airflow-init-v3
+    profiles: ["v3"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *airflow-v3-env
+      _AIRFLOW_DB_MIGRATE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+    volumes: *airflow-volumes
+    user: "0:0"
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        set -e
+        mkdir -p /opt/airflow/{logs,dags,plugins,config}
+        chown -R 50000:0 /opt/airflow/{logs,dags,plugins,config}
+        # All airflow subcommands MUST go through /entrypoint — it drops
+        # privileges to uid 50000 (the only user with the airflow python
+        # module on its path) and honours _AIRFLOW_DB_MIGRATE and
+        # _AIRFLOW_WWW_USER_* env vars, so this first call migrates the
+        # DB and creates the admin user in one shot.
+        /entrypoint airflow version
+        /entrypoint airflow pools set heavy_pool 2 "afmetric demo — heavy_pool"
+
+  airflow-apiserver:
+    image: *airflow-v3-image
+    container_name: afmetric-airflow-apiserver
+    profiles: ["v3"]
+    depends_on:
+      airflow-init-v3:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    environment: *airflow-v3-env
+    volumes: *airflow-volumes
+    command: api-server
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/api/v2/monitor/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  airflow-scheduler-v3:
+    image: *airflow-v3-image
+    container_name: afmetric-airflow-scheduler-v3
+    profiles: ["v3"]
+    depends_on:
+      airflow-init-v3:
+        condition: service_completed_successfully
+    environment: *airflow-v3-env
+    volumes: *airflow-volumes
+    command: scheduler
+
+  # 3.x split DAG parsing into its own long-lived process. Without it
+  # the scheduler never picks up files from demo/dags/.
+  airflow-dag-processor:
+    image: *airflow-v3-image
+    container_name: afmetric-airflow-dag-processor
+    profiles: ["v3"]
+    depends_on:
+      airflow-init-v3:
+        condition: service_completed_successfully
+    environment: *airflow-v3-env
+    volumes: *airflow-volumes
+    command: dag-processor
+
+  airflow-triggerer-v3:
+    image: *airflow-v3-image
+    container_name: afmetric-airflow-triggerer-v3
+    profiles: ["v3"]
+    depends_on:
+      airflow-init-v3:
+        condition: service_completed_successfully
+    environment: *airflow-v3-env
+    volumes: *airflow-volumes
+    command: triggerer
+
+volumes:
+  postgres_data:
+  airflow_logs:

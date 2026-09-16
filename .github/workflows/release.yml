@@ -1,0 +1,35 @@
+name: release
+
+# Triggered by pushing a tag that looks like a semver release (v1.2.3,
+# v1.2.3-rc.1). Regular commits go through ci.yml.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # goreleaser needs to create the GitHub release
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # goreleaser reads the full history to build the changelog.
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Personal access token with `repo` scope on the tap repository.
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}

@@ -113,8 +113,8 @@ func (s *Store) ImportErrors() []model.ImportError {
 }
 
 // UpsertDagRuns merges the given runs by (DagID, RunID). Existing runs with
-// the same key are overwritten. Tracks the max UpdatedAt for incremental
-// polling via LatestDagRunUpdate().
+// the same key are overwritten. Also tracks the max UpdatedAt across all
+// upserts — exposed via LatestDagRunUpdate() for observability.
 func (s *Store) UpsertDagRuns(runs []model.DagRun) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -126,9 +126,10 @@ func (s *Store) UpsertDagRuns(runs []model.DagRun) {
 	}
 }
 
-// LatestDagRunUpdate returns the max UpdatedAt among all stored DagRuns, or
-// the zero value if none. Collectors pass this back to Airflow as
-// updated_at_gte for incremental polling.
+// LatestDagRunUpdate returns the max UpdatedAt across all stored DagRuns, or
+// the zero value if none. Airflow's batched dagRuns endpoint does not accept
+// updated_at_gte, so this is a plain freshness watermark — collectors do not
+// feed it back to the API.
 func (s *Store) LatestDagRunUpdate() time.Time {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

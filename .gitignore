@@ -1,0 +1,27 @@
+# Binaries
+/bin/
+/dist/
+afmetric
+
+# Go build artifacts
+*.exe
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Local config
+/.env
+/.env.local
+
+# Python bytecode (demo/ DAGs are mounted into Airflow containers)
+__pycache__/
+*.py[cod]

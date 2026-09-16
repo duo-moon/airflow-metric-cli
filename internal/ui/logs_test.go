@@ -59,9 +59,14 @@ func TestParseAirflowLogContent(t *testing.T) {
 			want: "line1\nline2\nline3",
 		},
 		{
-			name: "escaped newlines expand",
+			// Non-tuple content passes through untouched: literal `\n` in a
+			// v3-decoded structlog payload (which may legitimately contain
+			// escaped-in-JSON sequences alongside real newlines) must not be
+			// re-expanded — that would double-break tracebacks. Escape
+			// expansion is scoped to the Python-repr tuple branch.
+			name: "non-tuple content preserves literal backslash-n",
 			in:   `line1\nline2\nline3`,
-			want: "line1\nline2\nline3",
+			want: `line1\nline2\nline3`,
 		},
 		{
 			name: "python-repr wrapper unwraps",

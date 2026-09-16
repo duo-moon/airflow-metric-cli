@@ -86,22 +86,6 @@ func TestTaskState_IsTerminal(t *testing.T) {
 	}
 }
 
-func TestTaskState_IsWaiting(t *testing.T) {
-	t.Parallel()
-	for _, s := range []TaskState{
-		TaskQueued, TaskScheduled, TaskDeferred, TaskUpForRetry, TaskUpForReschedule,
-	} {
-		if !s.IsWaiting() {
-			t.Errorf("%q should count as waiting", s)
-		}
-	}
-	for _, s := range []TaskState{TaskRunning, TaskSuccess, TaskFailed} {
-		if s.IsWaiting() {
-			t.Errorf("%q must NOT count as waiting", s)
-		}
-	}
-}
-
 func TestClusterHealth_UnhealthyExcludesUnknown(t *testing.T) {
 	t.Parallel()
 	h := ClusterHealth{Components: []ComponentHealth{

@@ -151,8 +151,16 @@ func TestDecodeV2LogContent_StructuredMessages(t *testing.T) {
 	// Union.From... helpers on the generated type let us build a real union
 	// value without hand-crafting json.RawMessage.
 	msgs := airflowv2.TaskInstancesLogResponseContent0{
-		{Event: "starting", Timestamp: ptrTime("2026-08-17T18:00:00Z")},
-		{Event: "boom", AdditionalProperties: map[string]any{"level": "ERROR"}},
+		{
+			Event:                "starting",
+			Timestamp:            ptrTime("2026-08-17T18:00:00Z"),
+			AdditionalProperties: map[string]any{"level": "info", "logger": "airflow.task"},
+		},
+		{
+			Event:                "boom",
+			AdditionalProperties: map[string]any{"level": "error"},
+		},
+		{Event: "no-level"},
 	}
 	var u airflowv2.TaskInstancesLogResponse_Content
 	if err := u.FromTaskInstancesLogResponseContent0(msgs); err != nil {
@@ -160,14 +168,133 @@ func TestDecodeV2LogContent_StructuredMessages(t *testing.T) {
 	}
 
 	got := decodeV2LogContent(&u)
-	// Expect timestamp + event on the first line, event + extras on the second.
-	for _, want := range []string{"2026-08-17T18:00:00Z", "starting", "boom", "level=", `"ERROR"`} {
-		if !strings.Contains(got, want) {
-			t.Errorf("missing %q in decoded output:\n%s", want, got)
+	// Rendered in the classic `TIMESTAMP LEVEL - message key=val` layout so
+	// the UI colorizer's `(^|\s)LEVEL - ` regex fires (including on the
+	// timestamp-less lines below thanks to the ^ alt). String values in
+	// extras render bare so grep patterns transfer from v1.
+	wantLines := []string{
+		`2026-08-17T18:00:00Z INFO - starting logger=airflow.task`,
+		`ERROR - boom`,
+		`INFO - no-level`,
+	}
+	want := strings.Join(wantLines, "\n")
+	if got != want {
+		t.Errorf("decoded output mismatch:\n got: %q\nwant: %q", got, want)
+	}
+}
+
+func TestFormatStructuredLogMessage_NumericLevel(t *testing.T) {
+	t.Parallel()
+
+	// Python-logging numeric levels (JSON unmarshals into float64).
+	cases := map[float64]string{
+		10: "DEBUG",
+		20: "INFO",
+		25: "INFO", // between INFO and WARNING → still INFO
+		30: "WARNING",
+		40: "ERROR",
+		50: "CRITICAL",
+		60: "CRITICAL", // above CRITICAL
+		0:  "DEBUG",
+	}
+	for numeric, want := range cases {
+		m := &airflowv2.StructuredLogMessage{
+			Event:                "boom",
+			AdditionalProperties: map[string]any{"level": numeric},
+		}
+		got := formatStructuredLogMessage(m)
+		wantLine := want + " - boom"
+		if got != wantLine {
+			t.Errorf("numeric level %v: got %q, want %q", numeric, got, wantLine)
 		}
 	}
-	if strings.Count(got, "\n") != 1 {
-		t.Errorf("expected 2 lines joined by 1 newline, got:\n%s", got)
+}
+
+func TestFormatStructuredLogMessage_LogLevelFallback(t *testing.T) {
+	t.Parallel()
+
+	// `level` absent → falls back to `log_level` and consumes it (should not
+	// appear in tail).
+	m := &airflowv2.StructuredLogMessage{
+		Event:                "x",
+		AdditionalProperties: map[string]any{"log_level": "warning", "task_id": "extract"},
+	}
+	got := formatStructuredLogMessage(m)
+	want := `WARNING - x task_id=extract`
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestFormatStructuredLogMessage_LevelAndLogLevelBothPresent(t *testing.T) {
+	t.Parallel()
+
+	// Both keys present — `level` wins as header, `log_level` survives in
+	// tail because only the actually-consumed key is filtered out.
+	m := &airflowv2.StructuredLogMessage{
+		Event:                "x",
+		AdditionalProperties: map[string]any{"level": "info", "log_level": "error"},
+	}
+	got := formatStructuredLogMessage(m)
+	want := `INFO - x log_level=error`
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestFormatStructuredLogMessage_UnrecognisedLevelKeepsRaw(t *testing.T) {
+	t.Parallel()
+
+	// Level of a shape we can't coerce (e.g. a map) → fallback to INFO AND
+	// leave the raw value visible in the extras tail (levelKey == "" means
+	// nothing gets filtered).
+	m := &airflowv2.StructuredLogMessage{
+		Event:                "x",
+		AdditionalProperties: map[string]any{"level": map[string]any{"weird": 1}},
+	}
+	got := formatStructuredLogMessage(m)
+	want := `INFO - x level={"weird":1}`
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestFormatStructuredLogMessage_TimestampNormalisedToUTC(t *testing.T) {
+	t.Parallel()
+
+	// Non-UTC timestamp must be converted; a literal 'Z' after local
+	// wall-clock would be a 3h lie.
+	loc := time.FixedZone("MSK", 3*60*60)
+	ts := time.Date(2026, 8, 17, 21, 0, 0, 0, loc) // 18:00 UTC
+	m := &airflowv2.StructuredLogMessage{
+		Event:                "x",
+		Timestamp:            &ts,
+		AdditionalProperties: map[string]any{"level": "info"},
+	}
+	got := formatStructuredLogMessage(m)
+	want := `2026-08-17T18:00:00Z INFO - x`
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestFormatStructuredLogMessage_StringsBareNonStringsJSON(t *testing.T) {
+	t.Parallel()
+
+	m := &airflowv2.StructuredLogMessage{
+		Event: "x",
+		AdditionalProperties: map[string]any{
+			"level":   "info",
+			"task_id": "extract",   // string → bare
+			"count":   float64(42), // number → JSON
+			"tags":    []any{"a", "b"},
+		},
+	}
+	got := formatStructuredLogMessage(m)
+	// Extras keys sort alphabetically.
+	want := `INFO - x count=42 tags=["a","b"] task_id=extract`
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 

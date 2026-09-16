@@ -227,27 +227,6 @@ func (e UpdateTaskState) Valid() bool {
 	}
 }
 
-// Defines values for WeightRule.
-const (
-	Absolute   WeightRule = "absolute"
-	Downstream WeightRule = "downstream"
-	Upstream   WeightRule = "upstream"
-)
-
-// Valid indicates whether the value is a known member of the WeightRule enum.
-func (e WeightRule) Valid() bool {
-	switch e {
-	case Absolute:
-		return true
-	case Downstream:
-		return true
-	case Upstream:
-		return true
-	default:
-		return false
-	}
-}
-
 // Action An action Item.
 //
 // *New in version 2.1.0*
@@ -1620,7 +1599,7 @@ type Task struct {
 	UiFgcolor         *Color `json:"ui_fgcolor,omitempty"`
 	WaitForDownstream *bool  `json:"wait_for_downstream,omitempty"`
 
-	// WeightRule Weight rule.
+	// WeightRule Weight rule. One of 'downstream', 'upstream', 'absolute', or the path of the custom priority weight strategy class.
 	WeightRule *WeightRule `json:"weight_rule,omitempty"`
 }
 
@@ -2092,8 +2071,8 @@ type VersionInfo struct {
 	Version *string `json:"version,omitempty"`
 }
 
-// WeightRule Weight rule.
-type WeightRule string
+// WeightRule Weight rule. One of 'downstream', 'upstream', 'absolute', or the path of the custom priority weight strategy class.
+type WeightRule = string
 
 // XCom Full representations of XCom entry.
 type XCom struct {

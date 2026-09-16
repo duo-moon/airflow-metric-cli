@@ -176,7 +176,7 @@ type ClientInterface interface {
 	// Logout the user.
 	//
 	// Corresponds with GET /api/v2/auth/logout (the `Logout` operationId).
-	Logout(ctx context.Context, params *LogoutParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	Logout(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListBackfills List Backfills
 	//
@@ -348,13 +348,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with PATCH /api/v2/connections/{connection_id} (the `PatchConnection` operationId).
 	PatchConnection(ctx context.Context, connectionId string, params *PatchConnectionParams, body PatchConnectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetDagReports Get Dag Reports
-	//
-	// Get DAG report.
-	//
-	// Corresponds with GET /api/v2/dagReports (the `GetDagReports` operationId).
-	GetDagReports(ctx context.Context, params *GetDagReportsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetDagSource Get Dag Source
 	//
@@ -574,6 +567,13 @@ type ClientInterface interface {
 	// Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/clear (the `ClearDagRun` operationId).
 	ClearDagRun(ctx context.Context, dagId string, dagRunId string, body ClearDagRunJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetHitlDetails Get Hitl Details
+	//
+	// Get Human-in-the-loop details.
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/hitlDetails (the `GetHitlDetails` operationId).
+	GetHitlDetails(ctx context.Context, dagId string, dagRunId string, params *GetHitlDetailsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetTaskInstances Get Task Instances
 	//
 	// Get list of task instances.
@@ -583,6 +583,24 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `GetTaskInstances` operationId).
 	GetTaskInstances(ctx context.Context, dagId string, dagRunId string, params *GetTaskInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// BulkTaskInstancesWithBody Bulk Task Instances
+	//
+	// Bulk update, and delete task instances.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+	BulkTaskInstancesWithBody(ctx context.Context, dagId string, dagRunId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// BulkTaskInstances Bulk Task Instances
+	//
+	// Bulk update, and delete task instances.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+	BulkTaskInstances(ctx context.Context, dagId string, dagRunId string, body BulkTaskInstancesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetTaskInstancesBatchWithBody Get Task Instances Batch
 	//
@@ -601,6 +619,13 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/list (the `GetTaskInstancesBatch` operationId).
 	GetTaskInstancesBatch(ctx context.Context, dagId GetTaskInstancesBatchParamsDagId, dagRunId GetTaskInstancesBatchParamsDagRunId, body GetTaskInstancesBatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteTaskInstance Delete Task Instance
+	//
+	// Delete a task instance.
+	//
+	// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id} (the `DeleteTaskInstance` operationId).
+	DeleteTaskInstance(ctx context.Context, dagId string, dagRunId string, taskId string, params *DeleteTaskInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetTaskInstance Get Task Instance
 	//
@@ -651,6 +676,13 @@ type ClientInterface interface {
 	//
 	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/dry_run (the `PatchTaskInstanceDryRun` operationId).
 	PatchTaskInstanceDryRun(ctx context.Context, dagId string, dagRunId string, taskId string, params *PatchTaskInstanceDryRunParams, body PatchTaskInstanceDryRunJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetExternalLogUrl Get External Log Url
+	//
+	// Get external log URL for a specific task instance.
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/externalLogUrl/{try_number} (the `GetExternalLogUrl` operationId).
+	GetExternalLogUrl(ctx context.Context, dagId string, dagRunId string, taskId string, tryNumber int, params *GetExternalLogUrlParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetExtraLinks Get Extra Links
 	//
@@ -713,6 +745,13 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/xcomEntries (the `CreateXcomEntry` operationId).
 	CreateXcomEntry(ctx context.Context, dagId string, dagRunId string, taskId string, body CreateXcomEntryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteXcomEntry Delete Xcom Entry
+	//
+	// Delete an XCom entry.
+	//
+	// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/xcomEntries/{xcom_key} (the `DeleteXcomEntry` operationId).
+	DeleteXcomEntry(ctx context.Context, dagId string, dagRunId string, taskId string, xcomKey string, params *DeleteXcomEntryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetXcomEntry Get Xcom Entry
 	//
@@ -789,6 +828,38 @@ type ClientInterface interface {
 	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/dry_run (the `PatchTaskInstanceDryRunByMapIndex` operationId).
 	PatchTaskInstanceDryRunByMapIndex(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, params *PatchTaskInstanceDryRunByMapIndexParams, body PatchTaskInstanceDryRunByMapIndexJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetHitlDetail Get Hitl Detail
+	//
+	// Get a Human-in-the-loop detail of a specific task instance.
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `GetHitlDetail` operationId).
+	GetHitlDetail(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateHitlDetailWithBody Update Hitl Detail
+	//
+	// Update a Human-in-the-loop detail.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+	UpdateHitlDetailWithBody(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateHitlDetail Update Hitl Detail
+	//
+	// Update a Human-in-the-loop detail.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+	UpdateHitlDetail(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, body UpdateHitlDetailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetHitlDetailTryDetail Get Hitl Detail Try Detail
+	//
+	// Get a Human-in-the-loop detail of a specific task instance.
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails/tries/{try_number} (the `GetHitlDetailTryDetail` operationId).
+	GetHitlDetailTryDetail(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, tryNumber int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetMappedTaskInstanceTries Get Mapped Task Instance Tries
 	//
 	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/tries (the `GetMappedTaskInstanceTries` operationId).
@@ -805,6 +876,13 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/upstreamAssetEvents (the `GetUpstreamAssetEvents` operationId).
 	GetUpstreamAssetEvents(ctx context.Context, dagId string, dagRunId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WaitDagRunUntilFinished Experimental: Wait for a dag run to complete, and return task results if requested.
+	//
+	// 🚧 This is an experimental endpoint and may change or be removed without notice.Successful response are streamed as newline-delimited JSON (NDJSON). Each line is a JSON object representing the DAG run state.
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/wait (the `WaitDagRunUntilFinished` operationId).
+	WaitDagRunUntilFinished(ctx context.Context, dagId string, dagRunId string, params *WaitDagRunUntilFinishedParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetDagVersions Get Dag Versions
 	//
@@ -829,6 +907,13 @@ type ClientInterface interface {
 	// Corresponds with GET /api/v2/dags/{dag_id}/details (the `GetDagDetails` operationId).
 	GetDagDetails(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// FavoriteDag Favorite Dag
+	//
+	// Mark the DAG as favorite.
+	//
+	// Corresponds with POST /api/v2/dags/{dag_id}/favorite (the `FavoriteDag` operationId).
+	FavoriteDag(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetTasks Get Tasks
 	//
 	// Get tasks for DAG.
@@ -842,6 +927,13 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v2/dags/{dag_id}/tasks/{task_id} (the `GetTask` operationId).
 	GetTask(ctx context.Context, dagId string, taskId interface{}, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UnfavoriteDag Unfavorite Dag
+	//
+	// Unmark the DAG as favorite.
+	//
+	// Corresponds with POST /api/v2/dags/{dag_id}/unfavorite (the `UnfavoriteDag` operationId).
+	UnfavoriteDag(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetEventLogs Get Event Logs
 	//
@@ -892,6 +984,11 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v2/plugins (the `GetPlugins` operationId).
 	GetPlugins(ctx context.Context, params *GetPluginsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ImportErrors Import Errors
+	//
+	// Corresponds with GET /api/v2/plugins/importErrors (the `ImportErrors` operationId).
+	ImportErrors(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetPools Get Pools
 	//
@@ -1254,8 +1351,8 @@ func (c *Client) Login(ctx context.Context, params *LoginParams, reqEditors ...R
 // Logout the user.
 //
 // Corresponds with GET /api/v2/auth/logout (the `Logout` operationId).
-func (c *Client) Logout(ctx context.Context, params *LogoutParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLogoutRequest(c.Server, params)
+func (c *Client) Logout(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLogoutRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -1657,23 +1754,6 @@ func (c *Client) PatchConnectionWithBody(ctx context.Context, connectionId strin
 // Corresponds with PATCH /api/v2/connections/{connection_id} (the `PatchConnection` operationId).
 func (c *Client) PatchConnection(ctx context.Context, connectionId string, params *PatchConnectionParams, body PatchConnectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPatchConnectionRequest(c.Server, connectionId, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetDagReports Get Dag Reports
-//
-// Get DAG report.
-//
-// Corresponds with GET /api/v2/dagReports (the `GetDagReports` operationId).
-func (c *Client) GetDagReports(ctx context.Context, params *GetDagReportsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetDagReportsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2182,6 +2262,23 @@ func (c *Client) ClearDagRun(ctx context.Context, dagId string, dagRunId string,
 	return c.Client.Do(req)
 }
 
+// GetHitlDetails Get Hitl Details
+//
+// Get Human-in-the-loop details.
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/hitlDetails (the `GetHitlDetails` operationId).
+func (c *Client) GetHitlDetails(ctx context.Context, dagId string, dagRunId string, params *GetHitlDetailsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHitlDetailsRequest(c.Server, dagId, dagRunId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetTaskInstances Get Task Instances
 //
 // Get list of task instances.
@@ -2192,6 +2289,44 @@ func (c *Client) ClearDagRun(ctx context.Context, dagId string, dagRunId string,
 // Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `GetTaskInstances` operationId).
 func (c *Client) GetTaskInstances(ctx context.Context, dagId string, dagRunId string, params *GetTaskInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetTaskInstancesRequest(c.Server, dagId, dagRunId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// BulkTaskInstancesWithBody Bulk Task Instances
+//
+// Bulk update, and delete task instances.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+func (c *Client) BulkTaskInstancesWithBody(ctx context.Context, dagId string, dagRunId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkTaskInstancesRequestWithBody(c.Server, dagId, dagRunId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// BulkTaskInstances Bulk Task Instances
+//
+// Bulk update, and delete task instances.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+func (c *Client) BulkTaskInstances(ctx context.Context, dagId string, dagRunId string, body BulkTaskInstancesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkTaskInstancesRequest(c.Server, dagId, dagRunId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2230,6 +2365,23 @@ func (c *Client) GetTaskInstancesBatchWithBody(ctx context.Context, dagId GetTas
 // Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/list (the `GetTaskInstancesBatch` operationId).
 func (c *Client) GetTaskInstancesBatch(ctx context.Context, dagId GetTaskInstancesBatchParamsDagId, dagRunId GetTaskInstancesBatchParamsDagRunId, body GetTaskInstancesBatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetTaskInstancesBatchRequest(c.Server, dagId, dagRunId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteTaskInstance Delete Task Instance
+//
+// Delete a task instance.
+//
+// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id} (the `DeleteTaskInstance` operationId).
+func (c *Client) DeleteTaskInstance(ctx context.Context, dagId string, dagRunId string, taskId string, params *DeleteTaskInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTaskInstanceRequest(c.Server, dagId, dagRunId, taskId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2340,6 +2492,23 @@ func (c *Client) PatchTaskInstanceDryRunWithBody(ctx context.Context, dagId stri
 // Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/dry_run (the `PatchTaskInstanceDryRun` operationId).
 func (c *Client) PatchTaskInstanceDryRun(ctx context.Context, dagId string, dagRunId string, taskId string, params *PatchTaskInstanceDryRunParams, body PatchTaskInstanceDryRunJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPatchTaskInstanceDryRunRequest(c.Server, dagId, dagRunId, taskId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetExternalLogUrl Get External Log Url
+//
+// Get external log URL for a specific task instance.
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/externalLogUrl/{try_number} (the `GetExternalLogUrl` operationId).
+func (c *Client) GetExternalLogUrl(ctx context.Context, dagId string, dagRunId string, taskId string, tryNumber int, params *GetExternalLogUrlParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetExternalLogUrlRequest(c.Server, dagId, dagRunId, taskId, tryNumber, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2482,6 +2651,23 @@ func (c *Client) CreateXcomEntryWithBody(ctx context.Context, dagId string, dagR
 // Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/xcomEntries (the `CreateXcomEntry` operationId).
 func (c *Client) CreateXcomEntry(ctx context.Context, dagId string, dagRunId string, taskId string, body CreateXcomEntryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateXcomEntryRequest(c.Server, dagId, dagRunId, taskId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteXcomEntry Delete Xcom Entry
+//
+// Delete an XCom entry.
+//
+// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/xcomEntries/{xcom_key} (the `DeleteXcomEntry` operationId).
+func (c *Client) DeleteXcomEntry(ctx context.Context, dagId string, dagRunId string, taskId string, xcomKey string, params *DeleteXcomEntryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteXcomEntryRequest(c.Server, dagId, dagRunId, taskId, xcomKey, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2657,6 +2843,78 @@ func (c *Client) PatchTaskInstanceDryRunByMapIndex(ctx context.Context, dagId st
 	return c.Client.Do(req)
 }
 
+// GetHitlDetail Get Hitl Detail
+//
+// Get a Human-in-the-loop detail of a specific task instance.
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `GetHitlDetail` operationId).
+func (c *Client) GetHitlDetail(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHitlDetailRequest(c.Server, dagId, dagRunId, taskId, mapIndex)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateHitlDetailWithBody Update Hitl Detail
+//
+// Update a Human-in-the-loop detail.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+func (c *Client) UpdateHitlDetailWithBody(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateHitlDetailRequestWithBody(c.Server, dagId, dagRunId, taskId, mapIndex, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateHitlDetail Update Hitl Detail
+//
+// Update a Human-in-the-loop detail.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+func (c *Client) UpdateHitlDetail(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, body UpdateHitlDetailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateHitlDetailRequest(c.Server, dagId, dagRunId, taskId, mapIndex, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetHitlDetailTryDetail Get Hitl Detail Try Detail
+//
+// Get a Human-in-the-loop detail of a specific task instance.
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails/tries/{try_number} (the `GetHitlDetailTryDetail` operationId).
+func (c *Client) GetHitlDetailTryDetail(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, tryNumber int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHitlDetailTryDetailRequest(c.Server, dagId, dagRunId, taskId, mapIndex, tryNumber)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetMappedTaskInstanceTries Get Mapped Task Instance Tries
 //
 // Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/tries (the `GetMappedTaskInstanceTries` operationId).
@@ -2694,6 +2952,23 @@ func (c *Client) GetMappedTaskInstanceTryDetails(ctx context.Context, dagId stri
 // Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/upstreamAssetEvents (the `GetUpstreamAssetEvents` operationId).
 func (c *Client) GetUpstreamAssetEvents(ctx context.Context, dagId string, dagRunId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetUpstreamAssetEventsRequest(c.Server, dagId, dagRunId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// WaitDagRunUntilFinished Experimental: Wait for a dag run to complete, and return task results if requested.
+//
+// 🚧 This is an experimental endpoint and may change or be removed without notice.Successful response are streamed as newline-delimited JSON (NDJSON). Each line is a JSON object representing the DAG run state.
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/wait (the `WaitDagRunUntilFinished` operationId).
+func (c *Client) WaitDagRunUntilFinished(ctx context.Context, dagId string, dagRunId string, params *WaitDagRunUntilFinishedParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWaitDagRunUntilFinishedRequest(c.Server, dagId, dagRunId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2757,6 +3032,23 @@ func (c *Client) GetDagDetails(ctx context.Context, dagId string, reqEditors ...
 	return c.Client.Do(req)
 }
 
+// FavoriteDag Favorite Dag
+//
+// Mark the DAG as favorite.
+//
+// Corresponds with POST /api/v2/dags/{dag_id}/favorite (the `FavoriteDag` operationId).
+func (c *Client) FavoriteDag(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFavoriteDagRequest(c.Server, dagId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetTasks Get Tasks
 //
 // Get tasks for DAG.
@@ -2781,6 +3073,23 @@ func (c *Client) GetTasks(ctx context.Context, dagId string, params *GetTasksPar
 // Corresponds with GET /api/v2/dags/{dag_id}/tasks/{task_id} (the `GetTask` operationId).
 func (c *Client) GetTask(ctx context.Context, dagId string, taskId interface{}, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetTaskRequest(c.Server, dagId, taskId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UnfavoriteDag Unfavorite Dag
+//
+// Unmark the DAG as favorite.
+//
+// Corresponds with POST /api/v2/dags/{dag_id}/unfavorite (the `UnfavoriteDag` operationId).
+func (c *Client) UnfavoriteDag(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUnfavoriteDagRequest(c.Server, dagId)
 	if err != nil {
 		return nil, err
 	}
@@ -2911,6 +3220,21 @@ func (c *Client) ReparseDagFile(ctx context.Context, fileToken string, reqEditor
 // Corresponds with GET /api/v2/plugins (the `GetPlugins` operationId).
 func (c *Client) GetPlugins(ctx context.Context, params *GetPluginsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetPluginsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ImportErrors Import Errors
+//
+// Corresponds with GET /api/v2/plugins/importErrors (the `ImportErrors` operationId).
+func (c *Client) ImportErrors(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewImportErrorsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -3387,7 +3711,7 @@ func NewGetAssetsRequest(server string, params *GetAssetsParams) (*http.Request,
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -3477,7 +3801,7 @@ func NewGetAssetAliasesRequest(server string, params *GetAssetAliasesParams) (*h
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -3589,7 +3913,7 @@ func NewGetAssetEventsRequest(server string, params *GetAssetEventsParams) (*htt
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -3659,6 +3983,18 @@ func NewGetAssetEventsRequest(server string, params *GetAssetEventsParams) (*htt
 
 		}
 
+		if params.NamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name_pattern", *params.NamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.TimestampGte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "timestamp_gte", *params.TimestampGte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
@@ -3671,9 +4007,33 @@ func NewGetAssetEventsRequest(server string, params *GetAssetEventsParams) (*htt
 
 		}
 
+		if params.TimestampGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "timestamp_gt", *params.TimestampGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.TimestampLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "timestamp_lte", *params.TimestampLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TimestampLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "timestamp_lt", *params.TimestampLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -3982,7 +4342,7 @@ func NewLoginRequest(server string, params *LoginParams) (*http.Request, error) 
 }
 
 // NewLogoutRequest constructs an http.Request for the Logout method
-func NewLogoutRequest(server string, params *LogoutParams) (*http.Request, error) {
+func NewLogoutRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -3998,33 +4358,6 @@ func NewLogoutRequest(server string, params *LogoutParams) (*http.Request, error
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
-	}
-
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if params.Next != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "next", *params.Next, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
@@ -4097,7 +4430,7 @@ func NewListBackfillsRequest(server string, params *ListBackfillsParams) (*http.
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -4516,7 +4849,7 @@ func NewGetConnectionsRequest(server string, params *GetConnectionsParams) (*htt
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -4841,56 +5174,6 @@ func NewPatchConnectionRequestWithBody(server string, connectionId string, param
 	return req, nil
 }
 
-// NewGetDagReportsRequest constructs an http.Request for the GetDagReports method
-func NewGetDagReportsRequest(server string, params *GetDagReportsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v2/dagReports")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "subdir", params.Subdir, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-			return nil, err
-		} else {
-			for _, qp := range strings.Split(queryFrag, "&") {
-				rawQueryFragments = append(rawQueryFragments, qp)
-			}
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewGetDagSourceRequest constructs an http.Request for the GetDagSource method
 func NewGetDagSourceRequest(server string, dagId string, params *GetDagSourceParams) (*http.Request, error) {
 	var err error
@@ -5075,7 +5358,7 @@ func NewGetDagTagsRequest(server string, params *GetDagTagsParams) (*http.Reques
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -5189,7 +5472,7 @@ func NewListDagWarningsRequest(server string, params *ListDagWarningsParams) (*h
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -5349,9 +5632,69 @@ func NewGetDagsRequest(server string, params *GetDagsParams) (*http.Request, err
 
 		}
 
+		if params.HasImportErrors != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "has_import_errors", *params.HasImportErrors, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.LastDagRunState != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "last_dag_run_state", *params.LastDagRunState, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.BundleName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "bundle_name", *params.BundleName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.BundleVersion != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "bundle_version", *params.BundleVersion, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.HasAssetSchedule != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "has_asset_schedule", *params.HasAssetSchedule, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.AssetDependency != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "asset_dependency", *params.AssetDependency, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -5373,9 +5716,33 @@ func NewGetDagsRequest(server string, params *GetDagsParams) (*http.Request, err
 
 		}
 
+		if params.DagRunStartDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_run_start_date_gt", *params.DagRunStartDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.DagRunStartDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_run_start_date_lte", *params.DagRunStartDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DagRunStartDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_run_start_date_lt", *params.DagRunStartDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -5397,9 +5764,33 @@ func NewGetDagsRequest(server string, params *GetDagsParams) (*http.Request, err
 
 		}
 
+		if params.DagRunEndDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_run_end_date_gt", *params.DagRunEndDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.DagRunEndDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_run_end_date_lte", *params.DagRunEndDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DagRunEndDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_run_end_date_lt", *params.DagRunEndDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -5423,7 +5814,31 @@ func NewGetDagsRequest(server string, params *GetDagsParams) (*http.Request, err
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.IsFavorite != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "is_favorite", *params.IsFavorite, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TimetableType != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "timetable_type", *params.TimetableType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6128,9 +6543,33 @@ func NewGetDagRunsRequest(server string, dagId string, params *GetDagRunsParams)
 
 		}
 
+		if params.RunAfterGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_gt", *params.RunAfterGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.RunAfterLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lte", *params.RunAfterLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunAfterLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lt", *params.RunAfterLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6152,9 +6591,33 @@ func NewGetDagRunsRequest(server string, dagId string, params *GetDagRunsParams)
 
 		}
 
+		if params.LogicalDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_gt", *params.LogicalDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.LogicalDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lte", *params.LogicalDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogicalDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lt", *params.LogicalDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6176,9 +6639,33 @@ func NewGetDagRunsRequest(server string, dagId string, params *GetDagRunsParams)
 
 		}
 
+		if params.StartDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_gt", *params.StartDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.StartDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lte", *params.StartDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.StartDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lt", *params.StartDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6200,9 +6687,81 @@ func NewGetDagRunsRequest(server string, dagId string, params *GetDagRunsParams)
 
 		}
 
+		if params.EndDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_gt", *params.EndDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.EndDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lte", *params.EndDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.EndDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lt", *params.EndDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DurationGte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_gte", *params.DurationGte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DurationGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_gt", *params.DurationGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DurationLte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_lte", *params.DurationLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DurationLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_lt", *params.DurationLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6224,9 +6783,45 @@ func NewGetDagRunsRequest(server string, dagId string, params *GetDagRunsParams)
 
 		}
 
+		if params.UpdatedAtGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_gt", *params.UpdatedAtGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.UpdatedAtLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_lte", *params.UpdatedAtLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.UpdatedAtLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_lt", *params.UpdatedAtLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ConfContains != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "conf_contains", *params.ConfContains, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6260,9 +6855,81 @@ func NewGetDagRunsRequest(server string, dagId string, params *GetDagRunsParams)
 
 		}
 
+		if params.DagVersion != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_version", *params.DagVersion, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.BundleVersion != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "bundle_version", *params.BundleVersion, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_id_pattern", *params.RunIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TriggeringUserNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "triggering_user_name_pattern", *params.TriggeringUserNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DagIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_id_pattern", *params.DagIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PartitionKeyPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "partition_key_pattern", *params.PartitionKeyPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6597,6 +7264,266 @@ func NewClearDagRunRequestWithBody(server string, dagId string, dagRunId string,
 	return req, nil
 }
 
+// NewGetHitlDetailsRequest constructs an http.Request for the GetHitlDetails method
+func NewGetHitlDetailsRequest(server string, dagId string, dagRunId string, params *GetHitlDetailsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/hitlDetails", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OrderBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DagIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_id_pattern", *params.DagIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TaskId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "task_id", *params.TaskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TaskIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "task_id_pattern", *params.TaskIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.MapIndex != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "map_index", *params.MapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.State != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "state", *params.State, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ResponseReceived != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "response_received", *params.ResponseReceived, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RespondedByUserId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "responded_by_user_id", *params.RespondedByUserId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RespondedByUserName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "responded_by_user_name", *params.RespondedByUserName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.SubjectSearch != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "subject_search", *params.SubjectSearch, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.BodySearch != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "body_search", *params.BodySearch, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.CreatedAtGte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "created_at_gte", *params.CreatedAtGte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.CreatedAtGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "created_at_gt", *params.CreatedAtGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.CreatedAtLte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "created_at_lte", *params.CreatedAtLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.CreatedAtLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "created_at_lt", *params.CreatedAtLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetTaskInstancesRequest constructs an http.Request for the GetTaskInstances method
 func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, params *GetTaskInstancesParams) (*http.Request, error) {
 	var err error
@@ -6663,9 +7590,33 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.RunAfterGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_gt", *params.RunAfterGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.RunAfterLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lte", *params.RunAfterLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunAfterLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lt", *params.RunAfterLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6687,9 +7638,33 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.LogicalDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_gt", *params.LogicalDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.LogicalDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lte", *params.LogicalDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogicalDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lt", *params.LogicalDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6711,9 +7686,33 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.StartDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_gt", *params.StartDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.StartDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lte", *params.StartDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.StartDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lt", *params.StartDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6735,9 +7734,33 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.EndDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_gt", *params.EndDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.EndDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lte", *params.EndDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.EndDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lt", *params.EndDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6759,9 +7782,33 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.UpdatedAtGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_gt", *params.UpdatedAtGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.UpdatedAtLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_lte", *params.UpdatedAtLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.UpdatedAtLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_lt", *params.UpdatedAtLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6783,6 +7830,18 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.DurationGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_gt", *params.DurationGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.DurationLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_lte", *params.DurationLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
@@ -6795,9 +7854,57 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.DurationLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_lt", *params.DurationLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.TaskDisplayNamePattern != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "task_display_name_pattern", *params.TaskDisplayNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TaskGroupId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "task_group_id", *params.TaskGroupId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DagIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_id_pattern", *params.DagIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_id_pattern", *params.RunIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6831,9 +7938,33 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		}
 
+		if params.PoolNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "pool_name_pattern", *params.PoolNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.Queue != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue", *params.Queue, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.QueueNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue_name_pattern", *params.QueueNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6858,6 +7989,54 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 		if params.VersionNumber != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "version_number", *params.VersionNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TryNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "try_number", *params.TryNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Operator != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "operator", *params.Operator, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OperatorNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "operator_name_pattern", *params.OperatorNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.MapIndex != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "map_index", *params.MapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6893,7 +8072,7 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6913,6 +8092,60 @@ func NewGetTaskInstancesRequest(server string, dagId string, dagRunId string, pa
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewBulkTaskInstancesRequest calls the generic BulkTaskInstances builder with application/json body
+func NewBulkTaskInstancesRequest(server string, dagId string, dagRunId string, body BulkTaskInstancesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewBulkTaskInstancesRequestWithBody(server, dagId, dagRunId, "application/json", bodyReader)
+}
+
+// NewBulkTaskInstancesRequestWithBody constructs an http.Request for the BulkTaskInstances method, with any body, and a specified content type
+func NewBulkTaskInstancesRequestWithBody(server string, dagId string, dagRunId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/taskInstances", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -6967,6 +8200,81 @@ func NewGetTaskInstancesBatchRequestWithBody(server string, dagId GetTaskInstanc
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteTaskInstanceRequest constructs an http.Request for the DeleteTaskInstance method
+func NewDeleteTaskInstanceRequest(server string, dagId string, dagRunId string, taskId string, params *DeleteTaskInstanceParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/taskInstances/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.MapIndex != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "map_index", *params.MapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -7294,6 +8602,88 @@ func NewPatchTaskInstanceDryRunRequestWithBody(server string, dagId string, dagR
 	return req, nil
 }
 
+// NewGetExternalLogUrlRequest constructs an http.Request for the GetExternalLogUrl method
+func NewGetExternalLogUrlRequest(server string, dagId string, dagRunId string, taskId string, tryNumber int, params *GetExternalLogUrlParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam3 string
+
+	pathParam3, err = runtime.StyleParamWithOptions("simple", false, "try_number", tryNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/taskInstances/%s/externalLogUrl/%s", pathParam0, pathParam1, pathParam2, pathParam3)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.MapIndex != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "map_index", *params.MapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetExtraLinksRequest constructs an http.Request for the GetExtraLinks method
 func NewGetExtraLinksRequest(server string, dagId string, dagRunId string, taskId string, params *GetExtraLinksParams) (*http.Request, error) {
 	var err error
@@ -7430,9 +8820,33 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		}
 
+		if params.RunAfterGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_gt", *params.RunAfterGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.RunAfterLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lte", *params.RunAfterLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunAfterLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lt", *params.RunAfterLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7454,9 +8868,33 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		}
 
+		if params.LogicalDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_gt", *params.LogicalDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.LogicalDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lte", *params.LogicalDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogicalDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lt", *params.LogicalDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7478,9 +8916,33 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		}
 
+		if params.StartDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_gt", *params.StartDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.StartDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lte", *params.StartDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.StartDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lt", *params.StartDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7502,9 +8964,33 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		}
 
+		if params.EndDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_gt", *params.EndDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.EndDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lte", *params.EndDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.EndDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lt", *params.EndDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7526,9 +9012,33 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		}
 
+		if params.UpdatedAtGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_gt", *params.UpdatedAtGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.UpdatedAtLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_lte", *params.UpdatedAtLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.UpdatedAtLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updated_at_lt", *params.UpdatedAtLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7550,9 +9060,33 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		}
 
+		if params.DurationGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_gt", *params.DurationGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.DurationLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_lte", *params.DurationLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DurationLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "duration_lt", *params.DurationLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7586,9 +9120,33 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		}
 
+		if params.PoolNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "pool_name_pattern", *params.PoolNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.Queue != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue", *params.Queue, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.QueueNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue_name_pattern", *params.QueueNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7613,6 +9171,54 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 		if params.VersionNumber != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "version_number", *params.VersionNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TryNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "try_number", *params.TryNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Operator != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "operator", *params.Operator, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OperatorNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "operator_name_pattern", *params.OperatorNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.MapIndex != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "map_index", *params.MapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -7648,7 +9254,7 @@ func NewGetMappedTaskInstancesRequest(server string, dagId string, dagRunId stri
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -8047,6 +9653,162 @@ func NewGetXcomEntriesRequest(server string, dagId string, dagRunId string, task
 
 		}
 
+		if params.XcomKeyPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "xcom_key_pattern", *params.XcomKeyPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.DagDisplayNamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_display_name_pattern", *params.DagDisplayNamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_id_pattern", *params.RunIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TaskIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "task_id_pattern", *params.TaskIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.MapIndexFilter != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "map_index_filter", *params.MapIndexFilter, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogicalDateGte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_gte", *params.LogicalDateGte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogicalDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_gt", *params.LogicalDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogicalDateLte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lte", *params.LogicalDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogicalDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "logical_date_lt", *params.LogicalDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunAfterGte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_gte", *params.RunAfterGte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunAfterGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_gt", *params.RunAfterGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunAfterLte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lte", *params.RunAfterLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunAfterLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_after_lt", *params.RunAfterLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
@@ -8118,6 +9880,88 @@ func NewCreateXcomEntryRequestWithBody(server string, dagId string, dagRunId str
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteXcomEntryRequest constructs an http.Request for the DeleteXcomEntry method
+func NewDeleteXcomEntryRequest(server string, dagId string, dagRunId string, taskId string, xcomKey string, params *DeleteXcomEntryParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam3 string
+
+	pathParam3, err = runtime.StyleParamWithOptions("simple", false, "xcom_key", xcomKey, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/taskInstances/%s/xcomEntries/%s", pathParam0, pathParam1, pathParam2, pathParam3)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.MapIndex != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "map_index", *params.MapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -8596,6 +10440,191 @@ func NewPatchTaskInstanceDryRunByMapIndexRequestWithBody(server string, dagId st
 	return req, nil
 }
 
+// NewGetHitlDetailRequest constructs an http.Request for the GetHitlDetail method
+func NewGetHitlDetailRequest(server string, dagId string, dagRunId string, taskId string, mapIndex int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam3 string
+
+	pathParam3, err = runtime.StyleParamWithOptions("simple", false, "map_index", mapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/taskInstances/%s/%s/hitlDetails", pathParam0, pathParam1, pathParam2, pathParam3)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateHitlDetailRequest calls the generic UpdateHitlDetail builder with application/json body
+func NewUpdateHitlDetailRequest(server string, dagId string, dagRunId string, taskId string, mapIndex int, body UpdateHitlDetailJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateHitlDetailRequestWithBody(server, dagId, dagRunId, taskId, mapIndex, "application/json", bodyReader)
+}
+
+// NewUpdateHitlDetailRequestWithBody constructs an http.Request for the UpdateHitlDetail method, with any body, and a specified content type
+func NewUpdateHitlDetailRequestWithBody(server string, dagId string, dagRunId string, taskId string, mapIndex int, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam3 string
+
+	pathParam3, err = runtime.StyleParamWithOptions("simple", false, "map_index", mapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/taskInstances/%s/%s/hitlDetails", pathParam0, pathParam1, pathParam2, pathParam3)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetHitlDetailTryDetailRequest constructs an http.Request for the GetHitlDetailTryDetail method
+func NewGetHitlDetailTryDetailRequest(server string, dagId string, dagRunId string, taskId string, mapIndex int, tryNumber int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam3 string
+
+	pathParam3, err = runtime.StyleParamWithOptions("simple", false, "map_index", mapIndex, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam4 string
+
+	pathParam4, err = runtime.StyleParamWithOptions("simple", false, "try_number", tryNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/taskInstances/%s/%s/hitlDetails/tries/%s", pathParam0, pathParam1, pathParam2, pathParam3, pathParam4)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetMappedTaskInstanceTriesRequest constructs an http.Request for the GetMappedTaskInstanceTries method
 func NewGetMappedTaskInstanceTriesRequest(server string, dagId string, dagRunId string, taskId string, mapIndex int) (*http.Request, error) {
 	var err error
@@ -8754,6 +10783,82 @@ func NewGetUpstreamAssetEventsRequest(server string, dagId string, dagRunId stri
 	return req, nil
 }
 
+// NewWaitDagRunUntilFinishedRequest constructs an http.Request for the WaitDagRunUntilFinished method
+func NewWaitDagRunUntilFinishedRequest(server string, dagId string, dagRunId string, params *WaitDagRunUntilFinishedParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "dag_run_id", dagRunId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/dagRuns/%s/wait", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "interval", params.Interval, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.Result != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "result", *params.Result, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetDagVersionsRequest constructs an http.Request for the GetDagVersions method
 func NewGetDagVersionsRequest(server string, dagId string, params *GetDagVersionsParams) (*http.Request, error) {
 	var err error
@@ -8851,7 +10956,7 @@ func NewGetDagVersionsRequest(server string, dagId string, params *GetDagVersion
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -8943,6 +11048,40 @@ func NewGetDagDetailsRequest(server string, dagId string) (*http.Request, error)
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewFavoriteDagRequest constructs an http.Request for the FavoriteDag method
+func NewFavoriteDagRequest(server string, dagId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/favorite", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -9052,6 +11191,40 @@ func NewGetTaskRequest(server string, dagId string, taskId interface{}) (*http.R
 	return req, nil
 }
 
+// NewUnfavoriteDagRequest constructs an http.Request for the UnfavoriteDag method
+func NewUnfavoriteDagRequest(server string, dagId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dag_id", dagId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/dags/%s/unfavorite", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetEventLogsRequest constructs an http.Request for the GetEventLogs method
 func NewGetEventLogsRequest(server string, params *GetEventLogsParams) (*http.Request, error) {
 	var err error
@@ -9106,7 +11279,7 @@ func NewGetEventLogsRequest(server string, params *GetEventLogsParams) (*http.Re
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -9248,6 +11421,66 @@ func NewGetEventLogsRequest(server string, params *GetEventLogsParams) (*http.Re
 
 		}
 
+		if params.DagIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dag_id_pattern", *params.DagIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TaskIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "task_id_pattern", *params.TaskIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RunIdPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "run_id_pattern", *params.RunIdPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OwnerPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "owner_pattern", *params.OwnerPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.EventPattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "event_pattern", *params.EventPattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
@@ -9350,7 +11583,19 @@ func NewGetImportErrorsRequest(server string, params *GetImportErrorsParams) (*h
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.FilenamePattern != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "filename_pattern", *params.FilenamePattern, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -9460,9 +11705,33 @@ func NewGetJobsRequest(server string, params *GetJobsParams) (*http.Request, err
 
 		}
 
+		if params.StartDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_gt", *params.StartDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.StartDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lte", *params.StartDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.StartDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_date_lt", *params.StartDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -9484,9 +11753,33 @@ func NewGetJobsRequest(server string, params *GetJobsParams) (*http.Request, err
 
 		}
 
+		if params.EndDateGt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_gt", *params.EndDateGt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.EndDateLte != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lte", *params.EndDateLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.EndDateLt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "end_date_lt", *params.EndDateLt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -9522,7 +11815,7 @@ func NewGetJobsRequest(server string, params *GetJobsParams) (*http.Request, err
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -9721,6 +12014,33 @@ func NewGetPluginsRequest(server string, params *GetPluginsParams) (*http.Reques
 	return req, nil
 }
 
+// NewImportErrorsRequest constructs an http.Request for the ImportErrors method
+func NewImportErrorsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v2/plugins/importErrors")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetPoolsRequest constructs an http.Request for the GetPools method
 func NewGetPoolsRequest(server string, params *GetPoolsParams) (*http.Request, error) {
 	var err error
@@ -9775,7 +12095,7 @@ func NewGetPoolsRequest(server string, params *GetPoolsParams) (*http.Request, e
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -10153,7 +12473,7 @@ func NewGetVariablesRequest(server string, params *GetVariablesParams) (*http.Re
 
 		if params.OrderBy != nil {
 
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "order_by", *params.OrderBy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -10588,7 +12908,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /api/v2/auth/logout (the `Logout` operationId).
-	LogoutWithResponse(ctx context.Context, params *LogoutParams, reqEditors ...RequestEditorFn) (*LogoutResponse, error)
+	LogoutWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LogoutResponse, error)
 
 	// ListBackfillsWithResponse List Backfills
 	//
@@ -10782,15 +13102,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PATCH /api/v2/connections/{connection_id} (the `PatchConnection` operationId).
 	PatchConnectionWithResponse(ctx context.Context, connectionId string, params *PatchConnectionParams, body PatchConnectionJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchConnectionResponse, error)
-
-	// GetDagReportsWithResponse Get Dag Reports
-	//
-	// Get DAG report.
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /api/v2/dagReports (the `GetDagReports` operationId).
-	GetDagReportsWithResponse(ctx context.Context, params *GetDagReportsParams, reqEditors ...RequestEditorFn) (*GetDagReportsResponse, error)
 
 	// GetDagSourceWithResponse Get Dag Source
 	//
@@ -11038,6 +13349,15 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/clear (the `ClearDagRun` operationId).
 	ClearDagRunWithResponse(ctx context.Context, dagId string, dagRunId string, body ClearDagRunJSONRequestBody, reqEditors ...RequestEditorFn) (*ClearDagRunResponse, error)
 
+	// GetHitlDetailsWithResponse Get Hitl Details
+	//
+	// Get Human-in-the-loop details.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/hitlDetails (the `GetHitlDetails` operationId).
+	GetHitlDetailsWithResponse(ctx context.Context, dagId string, dagRunId string, params *GetHitlDetailsParams, reqEditors ...RequestEditorFn) (*GetHitlDetailsResponse, error)
+
 	// GetTaskInstancesWithResponse Get Task Instances
 	//
 	// Get list of task instances.
@@ -11049,6 +13369,24 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `GetTaskInstances` operationId).
 	GetTaskInstancesWithResponse(ctx context.Context, dagId string, dagRunId string, params *GetTaskInstancesParams, reqEditors ...RequestEditorFn) (*GetTaskInstancesResponse, error)
+
+	// BulkTaskInstancesWithBodyWithResponse Bulk Task Instances
+	//
+	// Bulk update, and delete task instances.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+	BulkTaskInstancesWithBodyWithResponse(ctx context.Context, dagId string, dagRunId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkTaskInstancesResponse, error)
+
+	// BulkTaskInstancesWithResponse Bulk Task Instances
+	//
+	// Bulk update, and delete task instances.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+	BulkTaskInstancesWithResponse(ctx context.Context, dagId string, dagRunId string, body BulkTaskInstancesJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkTaskInstancesResponse, error)
 
 	// GetTaskInstancesBatchWithBodyWithResponse Get Task Instances Batch
 	//
@@ -11067,6 +13405,15 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/list (the `GetTaskInstancesBatch` operationId).
 	GetTaskInstancesBatchWithResponse(ctx context.Context, dagId GetTaskInstancesBatchParamsDagId, dagRunId GetTaskInstancesBatchParamsDagRunId, body GetTaskInstancesBatchJSONRequestBody, reqEditors ...RequestEditorFn) (*GetTaskInstancesBatchResponse, error)
+
+	// DeleteTaskInstanceWithResponse Delete Task Instance
+	//
+	// Delete a task instance.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id} (the `DeleteTaskInstance` operationId).
+	DeleteTaskInstanceWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, params *DeleteTaskInstanceParams, reqEditors ...RequestEditorFn) (*DeleteTaskInstanceResponse, error)
 
 	// GetTaskInstanceWithResponse Get Task Instance
 	//
@@ -11121,6 +13468,15 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/dry_run (the `PatchTaskInstanceDryRun` operationId).
 	PatchTaskInstanceDryRunWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, params *PatchTaskInstanceDryRunParams, body PatchTaskInstanceDryRunJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchTaskInstanceDryRunResponse, error)
+
+	// GetExternalLogUrlWithResponse Get External Log Url
+	//
+	// Get external log URL for a specific task instance.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/externalLogUrl/{try_number} (the `GetExternalLogUrl` operationId).
+	GetExternalLogUrlWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, tryNumber int, params *GetExternalLogUrlParams, reqEditors ...RequestEditorFn) (*GetExternalLogUrlResponse, error)
 
 	// GetExtraLinksWithResponse Get Extra Links
 	//
@@ -11195,6 +13551,15 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/xcomEntries (the `CreateXcomEntry` operationId).
 	CreateXcomEntryWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, body CreateXcomEntryJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateXcomEntryResponse, error)
+
+	// DeleteXcomEntryWithResponse Delete Xcom Entry
+	//
+	// Delete an XCom entry.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/xcomEntries/{xcom_key} (the `DeleteXcomEntry` operationId).
+	DeleteXcomEntryWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, xcomKey string, params *DeleteXcomEntryParams, reqEditors ...RequestEditorFn) (*DeleteXcomEntryResponse, error)
 
 	// GetXcomEntryWithResponse Get Xcom Entry
 	//
@@ -11277,6 +13642,42 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/dry_run (the `PatchTaskInstanceDryRunByMapIndex` operationId).
 	PatchTaskInstanceDryRunByMapIndexWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, params *PatchTaskInstanceDryRunByMapIndexParams, body PatchTaskInstanceDryRunByMapIndexJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchTaskInstanceDryRunByMapIndexResponse, error)
 
+	// GetHitlDetailWithResponse Get Hitl Detail
+	//
+	// Get a Human-in-the-loop detail of a specific task instance.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `GetHitlDetail` operationId).
+	GetHitlDetailWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, reqEditors ...RequestEditorFn) (*GetHitlDetailResponse, error)
+
+	// UpdateHitlDetailWithBodyWithResponse Update Hitl Detail
+	//
+	// Update a Human-in-the-loop detail.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+	UpdateHitlDetailWithBodyWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateHitlDetailResponse, error)
+
+	// UpdateHitlDetailWithResponse Update Hitl Detail
+	//
+	// Update a Human-in-the-loop detail.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+	UpdateHitlDetailWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, body UpdateHitlDetailJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateHitlDetailResponse, error)
+
+	// GetHitlDetailTryDetailWithResponse Get Hitl Detail Try Detail
+	//
+	// Get a Human-in-the-loop detail of a specific task instance.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails/tries/{try_number} (the `GetHitlDetailTryDetail` operationId).
+	GetHitlDetailTryDetailWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, tryNumber int, reqEditors ...RequestEditorFn) (*GetHitlDetailTryDetailResponse, error)
+
 	// GetMappedTaskInstanceTriesWithResponse Get Mapped Task Instance Tries
 	//
 	// Returns a wrapper object for the known response body format(s).
@@ -11299,6 +13700,15 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/upstreamAssetEvents (the `GetUpstreamAssetEvents` operationId).
 	GetUpstreamAssetEventsWithResponse(ctx context.Context, dagId string, dagRunId string, reqEditors ...RequestEditorFn) (*GetUpstreamAssetEventsResponse, error)
+
+	// WaitDagRunUntilFinishedWithResponse Experimental: Wait for a dag run to complete, and return task results if requested.
+	//
+	// 🚧 This is an experimental endpoint and may change or be removed without notice.Successful response are streamed as newline-delimited JSON (NDJSON). Each line is a JSON object representing the DAG run state.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/wait (the `WaitDagRunUntilFinished` operationId).
+	WaitDagRunUntilFinishedWithResponse(ctx context.Context, dagId string, dagRunId string, params *WaitDagRunUntilFinishedParams, reqEditors ...RequestEditorFn) (*WaitDagRunUntilFinishedResponse, error)
 
 	// GetDagVersionsWithResponse Get Dag Versions
 	//
@@ -11329,6 +13739,15 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /api/v2/dags/{dag_id}/details (the `GetDagDetails` operationId).
 	GetDagDetailsWithResponse(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*GetDagDetailsResponse, error)
 
+	// FavoriteDagWithResponse Favorite Dag
+	//
+	// Mark the DAG as favorite.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v2/dags/{dag_id}/favorite (the `FavoriteDag` operationId).
+	FavoriteDagWithResponse(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*FavoriteDagResponse, error)
+
 	// GetTasksWithResponse Get Tasks
 	//
 	// Get tasks for DAG.
@@ -11346,6 +13765,15 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v2/dags/{dag_id}/tasks/{task_id} (the `GetTask` operationId).
 	GetTaskWithResponse(ctx context.Context, dagId string, taskId interface{}, reqEditors ...RequestEditorFn) (*GetTaskResponse, error)
+
+	// UnfavoriteDagWithResponse Unfavorite Dag
+	//
+	// Unmark the DAG as favorite.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v2/dags/{dag_id}/unfavorite (the `UnfavoriteDag` operationId).
+	UnfavoriteDagWithResponse(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*UnfavoriteDagResponse, error)
 
 	// GetEventLogsWithResponse Get Event Logs
 	//
@@ -11412,6 +13840,13 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v2/plugins (the `GetPlugins` operationId).
 	GetPluginsWithResponse(ctx context.Context, params *GetPluginsParams, reqEditors ...RequestEditorFn) (*GetPluginsResponse, error)
+
+	// ImportErrorsWithResponse Import Errors
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v2/plugins/importErrors (the `ImportErrors` operationId).
+	ImportErrorsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ImportErrorsResponse, error)
 
 	// GetPoolsWithResponse Get Pools
 	//
@@ -12013,6 +14448,8 @@ type MaterializeAssetResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *DAGRunResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *HTTPExceptionResponse
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *HTTPExceptionResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
@@ -12028,6 +14465,11 @@ type MaterializeAssetResponse struct {
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r MaterializeAssetResponse) GetJSON200() *DAGRunResponse {
 	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r MaterializeAssetResponse) GetJSON400() *HTTPExceptionResponse {
+	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
@@ -12155,8 +14597,6 @@ type GetAssetQueuedEventsResponse struct {
 	JSON401 *HTTPExceptionResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *HTTPExceptionResponse
-	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *HTTPExceptionResponse
 	// JSON422 the response for an HTTP 422 `application/json` response
 	JSON422 *HTTPValidationError
 }
@@ -12174,11 +14614,6 @@ func (r GetAssetQueuedEventsResponse) GetJSON401() *HTTPExceptionResponse {
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r GetAssetQueuedEventsResponse) GetJSON403() *HTTPExceptionResponse {
 	return r.JSON403
-}
-
-// GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetAssetQueuedEventsResponse) GetJSON404() *HTTPExceptionResponse {
-	return r.JSON404
 }
 
 // GetJSON422 returns the response for an HTTP 422 `application/json` response
@@ -12277,8 +14712,6 @@ type LogoutResponse struct {
 	JSON200 *interface{}
 	// JSON307 the response for an HTTP 307 `application/json` response
 	JSON307 *HTTPExceptionResponse
-	// JSON422 the response for an HTTP 422 `application/json` response
-	JSON422 *HTTPValidationError
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
@@ -12289,11 +14722,6 @@ func (r LogoutResponse) GetJSON200() *interface{} {
 // GetJSON307 returns the response for an HTTP 307 `application/json` response
 func (r LogoutResponse) GetJSON307() *HTTPExceptionResponse {
 	return r.JSON307
-}
-
-// GetJSON422 returns the response for an HTTP 422 `application/json` response
-func (r LogoutResponse) GetJSON422() *HTTPValidationError {
-	return r.JSON422
 }
 
 // GetBody returns the raw response body bytes
@@ -12392,6 +14820,8 @@ type CreateBackfillResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *BackfillResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *HTTPExceptionResponse
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *HTTPExceptionResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
@@ -12407,6 +14837,11 @@ type CreateBackfillResponse struct {
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r CreateBackfillResponse) GetJSON200() *BackfillResponse {
 	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateBackfillResponse) GetJSON400() *HTTPExceptionResponse {
+	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
@@ -13505,75 +15940,6 @@ func (r PatchConnectionResponse) ContentType() string {
 	return ""
 }
 
-type GetDagReportsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *interface{}
-	// JSON400 the response for an HTTP 400 `application/json` response
-	JSON400 *HTTPExceptionResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *HTTPExceptionResponse
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *HTTPExceptionResponse
-	// JSON422 the response for an HTTP 422 `application/json` response
-	JSON422 *HTTPValidationError
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetDagReportsResponse) GetJSON200() *interface{} {
-	return r.JSON200
-}
-
-// GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r GetDagReportsResponse) GetJSON400() *HTTPExceptionResponse {
-	return r.JSON400
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetDagReportsResponse) GetJSON401() *HTTPExceptionResponse {
-	return r.JSON401
-}
-
-// GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r GetDagReportsResponse) GetJSON403() *HTTPExceptionResponse {
-	return r.JSON403
-}
-
-// GetJSON422 returns the response for an HTTP 422 `application/json` response
-func (r GetDagReportsResponse) GetJSON422() *HTTPValidationError {
-	return r.JSON422
-}
-
-// GetBody returns the raw response body bytes
-func (r GetDagReportsResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetDagReportsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetDagReportsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetDagReportsResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
 type GetDagSourceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -14301,8 +16667,6 @@ type GetDagAssetQueuedEventsResponse struct {
 	JSON401 *HTTPExceptionResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *HTTPExceptionResponse
-	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *HTTPExceptionResponse
 	// JSON422 the response for an HTTP 422 `application/json` response
 	JSON422 *HTTPValidationError
 }
@@ -14320,11 +16684,6 @@ func (r GetDagAssetQueuedEventsResponse) GetJSON401() *HTTPExceptionResponse {
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r GetDagAssetQueuedEventsResponse) GetJSON403() *HTTPExceptionResponse {
 	return r.JSON403
-}
-
-// GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetDagAssetQueuedEventsResponse) GetJSON404() *HTTPExceptionResponse {
-	return r.JSON404
 }
 
 // GetJSON422 returns the response for an HTTP 422 `application/json` response
@@ -14510,6 +16869,8 @@ type PostClearTaskInstancesResponse struct {
 	JSON403 *HTTPExceptionResponse
 	// JSON404 the response for an HTTP 404 `application/json` response
 	JSON404 *HTTPExceptionResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *HTTPExceptionResponse
 	// JSON422 the response for an HTTP 422 `application/json` response
 	JSON422 *HTTPValidationError
 }
@@ -14532,6 +16893,11 @@ func (r PostClearTaskInstancesResponse) GetJSON403() *HTTPExceptionResponse {
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
 func (r PostClearTaskInstancesResponse) GetJSON404() *HTTPExceptionResponse {
 	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostClearTaskInstancesResponse) GetJSON409() *HTTPExceptionResponse {
+	return r.JSON409
 }
 
 // GetJSON422 returns the response for an HTTP 422 `application/json` response
@@ -15072,11 +17438,75 @@ func (r ClearDagRunResponse) ContentType() string {
 	return ""
 }
 
+type GetHitlDetailsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *HITLDetailCollection
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetHitlDetailsResponse) GetJSON200() *HITLDetailCollection {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetHitlDetailsResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetHitlDetailsResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r GetHitlDetailsResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r GetHitlDetailsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetHitlDetailsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetHitlDetailsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetHitlDetailsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetTaskInstancesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *TaskInstanceCollectionResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *HTTPExceptionResponse
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *HTTPExceptionResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
@@ -15090,6 +17520,11 @@ type GetTaskInstancesResponse struct {
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetTaskInstancesResponse) GetJSON200() *TaskInstanceCollectionResponse {
 	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetTaskInstancesResponse) GetJSON400() *HTTPExceptionResponse {
+	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
@@ -15135,6 +17570,68 @@ func (r GetTaskInstancesResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetTaskInstancesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type BulkTaskInstancesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *BulkResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r BulkTaskInstancesResponse) GetJSON200() *BulkResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r BulkTaskInstancesResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r BulkTaskInstancesResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r BulkTaskInstancesResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r BulkTaskInstancesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r BulkTaskInstancesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r BulkTaskInstancesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r BulkTaskInstancesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -15204,6 +17701,75 @@ func (r GetTaskInstancesBatchResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetTaskInstancesBatchResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteTaskInstanceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *interface{}
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteTaskInstanceResponse) GetJSON200() *interface{} {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteTaskInstanceResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteTaskInstanceResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteTaskInstanceResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r DeleteTaskInstanceResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteTaskInstanceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteTaskInstanceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteTaskInstanceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteTaskInstanceResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -15501,6 +18067,82 @@ func (r PatchTaskInstanceDryRunResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PatchTaskInstanceDryRunResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetExternalLogUrlResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ExternalLogUrlResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *HTTPExceptionResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetExternalLogUrlResponse) GetJSON200() *ExternalLogUrlResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetExternalLogUrlResponse) GetJSON400() *HTTPExceptionResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetExternalLogUrlResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetExternalLogUrlResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetExternalLogUrlResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r GetExternalLogUrlResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r GetExternalLogUrlResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetExternalLogUrlResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetExternalLogUrlResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetExternalLogUrlResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -16004,6 +18646,75 @@ func (r CreateXcomEntryResponse) ContentType() string {
 	return ""
 }
 
+type DeleteXcomEntryResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *HTTPExceptionResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteXcomEntryResponse) GetJSON400() *HTTPExceptionResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteXcomEntryResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteXcomEntryResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteXcomEntryResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r DeleteXcomEntryResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteXcomEntryResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteXcomEntryResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteXcomEntryResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteXcomEntryResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetXcomEntryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -16453,6 +19164,220 @@ func (r PatchTaskInstanceDryRunByMapIndexResponse) ContentType() string {
 	return ""
 }
 
+type GetHitlDetailResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *HITLDetail
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetHitlDetailResponse) GetJSON200() *HITLDetail {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetHitlDetailResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetHitlDetailResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetHitlDetailResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r GetHitlDetailResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r GetHitlDetailResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetHitlDetailResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetHitlDetailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetHitlDetailResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateHitlDetailResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *HITLDetailResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateHitlDetailResponse) GetJSON200() *HITLDetailResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateHitlDetailResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateHitlDetailResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateHitlDetailResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateHitlDetailResponse) GetJSON409() *HTTPExceptionResponse {
+	return r.JSON409
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r UpdateHitlDetailResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateHitlDetailResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateHitlDetailResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateHitlDetailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateHitlDetailResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetHitlDetailTryDetailResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *HITLDetailHistory
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetHitlDetailTryDetailResponse) GetJSON200() *HITLDetailHistory {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetHitlDetailTryDetailResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetHitlDetailTryDetailResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetHitlDetailTryDetailResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r GetHitlDetailTryDetailResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r GetHitlDetailTryDetailResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetHitlDetailTryDetailResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetHitlDetailTryDetailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetHitlDetailTryDetailResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetMappedTaskInstanceTriesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -16654,6 +19579,75 @@ func (r GetUpstreamAssetEventsResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetUpstreamAssetEventsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type WaitDagRunUntilFinishedResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *interface{}
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r WaitDagRunUntilFinishedResponse) GetJSON200() *interface{} {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r WaitDagRunUntilFinishedResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r WaitDagRunUntilFinishedResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r WaitDagRunUntilFinishedResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r WaitDagRunUntilFinishedResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r WaitDagRunUntilFinishedResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r WaitDagRunUntilFinishedResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WaitDagRunUntilFinishedResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r WaitDagRunUntilFinishedResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -16874,6 +19868,68 @@ func (r GetDagDetailsResponse) ContentType() string {
 	return ""
 }
 
+type FavoriteDagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r FavoriteDagResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r FavoriteDagResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r FavoriteDagResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r FavoriteDagResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r FavoriteDagResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r FavoriteDagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r FavoriteDagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r FavoriteDagResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetTasksResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -17020,6 +20076,75 @@ func (r GetTaskResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetTaskResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UnfavoriteDagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *HTTPExceptionResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *HTTPExceptionResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UnfavoriteDagResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UnfavoriteDagResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UnfavoriteDagResponse) GetJSON404() *HTTPExceptionResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UnfavoriteDagResponse) GetJSON409() *HTTPExceptionResponse {
+	return r.JSON409
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r UnfavoriteDagResponse) GetJSON422() *HTTPValidationError {
+	return r.JSON422
+}
+
+// GetBody returns the raw response body bytes
+func (r UnfavoriteDagResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UnfavoriteDagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UnfavoriteDagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UnfavoriteDagResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -17402,7 +20527,7 @@ type ReparseDagFileResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *any
+	JSON201 *interface{}
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *HTTPExceptionResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
@@ -17414,7 +20539,7 @@ type ReparseDagFileResponse struct {
 }
 
 // GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r ReparseDagFileResponse) GetJSON201() *any {
+func (r ReparseDagFileResponse) GetJSON201() *interface{} {
 	return r.JSON201
 }
 
@@ -17523,6 +20648,61 @@ func (r GetPluginsResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetPluginsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ImportErrorsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PluginImportErrorCollectionResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *HTTPExceptionResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *HTTPExceptionResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ImportErrorsResponse) GetJSON200() *PluginImportErrorCollectionResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ImportErrorsResponse) GetJSON401() *HTTPExceptionResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ImportErrorsResponse) GetJSON403() *HTTPExceptionResponse {
+	return r.JSON403
+}
+
+// GetBody returns the raw response body bytes
+func (r ImportErrorsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ImportErrorsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ImportErrorsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ImportErrorsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -18618,8 +21798,8 @@ func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, params *Log
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /api/v2/auth/logout (the `Logout` operationId).
-func (c *ClientWithResponses) LogoutWithResponse(ctx context.Context, params *LogoutParams, reqEditors ...RequestEditorFn) (*LogoutResponse, error) {
-	rsp, err := c.Logout(ctx, params, reqEditors...)
+func (c *ClientWithResponses) LogoutWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LogoutResponse, error) {
+	rsp, err := c.Logout(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -18955,21 +22135,6 @@ func (c *ClientWithResponses) PatchConnectionWithResponse(ctx context.Context, c
 		return nil, err
 	}
 	return ParsePatchConnectionResponse(rsp)
-}
-
-// GetDagReportsWithResponse Get Dag Reports
-//
-// Get DAG report.
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /api/v2/dagReports (the `GetDagReports` operationId).
-func (c *ClientWithResponses) GetDagReportsWithResponse(ctx context.Context, params *GetDagReportsParams, reqEditors ...RequestEditorFn) (*GetDagReportsResponse, error) {
-	rsp, err := c.GetDagReports(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetDagReportsResponse(rsp)
 }
 
 // GetDagSourceWithResponse Get Dag Source
@@ -19386,6 +22551,21 @@ func (c *ClientWithResponses) ClearDagRunWithResponse(ctx context.Context, dagId
 	return ParseClearDagRunResponse(rsp)
 }
 
+// GetHitlDetailsWithResponse Get Hitl Details
+//
+// Get Human-in-the-loop details.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/hitlDetails (the `GetHitlDetails` operationId).
+func (c *ClientWithResponses) GetHitlDetailsWithResponse(ctx context.Context, dagId string, dagRunId string, params *GetHitlDetailsParams, reqEditors ...RequestEditorFn) (*GetHitlDetailsResponse, error) {
+	rsp, err := c.GetHitlDetails(ctx, dagId, dagRunId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetHitlDetailsResponse(rsp)
+}
+
 // GetTaskInstancesWithResponse Get Task Instances
 //
 // Get list of task instances.
@@ -19402,6 +22582,36 @@ func (c *ClientWithResponses) GetTaskInstancesWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseGetTaskInstancesResponse(rsp)
+}
+
+// BulkTaskInstancesWithBodyWithResponse Bulk Task Instances
+//
+// Bulk update, and delete task instances.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+func (c *ClientWithResponses) BulkTaskInstancesWithBodyWithResponse(ctx context.Context, dagId string, dagRunId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkTaskInstancesResponse, error) {
+	rsp, err := c.BulkTaskInstancesWithBody(ctx, dagId, dagRunId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkTaskInstancesResponse(rsp)
+}
+
+// BulkTaskInstancesWithResponse Bulk Task Instances
+//
+// Bulk update, and delete task instances.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances (the `BulkTaskInstances` operationId).
+func (c *ClientWithResponses) BulkTaskInstancesWithResponse(ctx context.Context, dagId string, dagRunId string, body BulkTaskInstancesJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkTaskInstancesResponse, error) {
+	rsp, err := c.BulkTaskInstances(ctx, dagId, dagRunId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkTaskInstancesResponse(rsp)
 }
 
 // GetTaskInstancesBatchWithBodyWithResponse Get Task Instances Batch
@@ -19432,6 +22642,21 @@ func (c *ClientWithResponses) GetTaskInstancesBatchWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseGetTaskInstancesBatchResponse(rsp)
+}
+
+// DeleteTaskInstanceWithResponse Delete Task Instance
+//
+// Delete a task instance.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id} (the `DeleteTaskInstance` operationId).
+func (c *ClientWithResponses) DeleteTaskInstanceWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, params *DeleteTaskInstanceParams, reqEditors ...RequestEditorFn) (*DeleteTaskInstanceResponse, error) {
+	rsp, err := c.DeleteTaskInstance(ctx, dagId, dagRunId, taskId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTaskInstanceResponse(rsp)
 }
 
 // GetTaskInstanceWithResponse Get Task Instance
@@ -19522,6 +22747,21 @@ func (c *ClientWithResponses) PatchTaskInstanceDryRunWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParsePatchTaskInstanceDryRunResponse(rsp)
+}
+
+// GetExternalLogUrlWithResponse Get External Log Url
+//
+// Get external log URL for a specific task instance.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/externalLogUrl/{try_number} (the `GetExternalLogUrl` operationId).
+func (c *ClientWithResponses) GetExternalLogUrlWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, tryNumber int, params *GetExternalLogUrlParams, reqEditors ...RequestEditorFn) (*GetExternalLogUrlResponse, error) {
+	rsp, err := c.GetExternalLogUrl(ctx, dagId, dagRunId, taskId, tryNumber, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetExternalLogUrlResponse(rsp)
 }
 
 // GetExtraLinksWithResponse Get Extra Links
@@ -19644,6 +22884,21 @@ func (c *ClientWithResponses) CreateXcomEntryWithResponse(ctx context.Context, d
 		return nil, err
 	}
 	return ParseCreateXcomEntryResponse(rsp)
+}
+
+// DeleteXcomEntryWithResponse Delete Xcom Entry
+//
+// Delete an XCom entry.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/xcomEntries/{xcom_key} (the `DeleteXcomEntry` operationId).
+func (c *ClientWithResponses) DeleteXcomEntryWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, xcomKey string, params *DeleteXcomEntryParams, reqEditors ...RequestEditorFn) (*DeleteXcomEntryResponse, error) {
+	rsp, err := c.DeleteXcomEntry(ctx, dagId, dagRunId, taskId, xcomKey, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteXcomEntryResponse(rsp)
 }
 
 // GetXcomEntryWithResponse Get Xcom Entry
@@ -19781,6 +23036,66 @@ func (c *ClientWithResponses) PatchTaskInstanceDryRunByMapIndexWithResponse(ctx 
 	return ParsePatchTaskInstanceDryRunByMapIndexResponse(rsp)
 }
 
+// GetHitlDetailWithResponse Get Hitl Detail
+//
+// Get a Human-in-the-loop detail of a specific task instance.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `GetHitlDetail` operationId).
+func (c *ClientWithResponses) GetHitlDetailWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, reqEditors ...RequestEditorFn) (*GetHitlDetailResponse, error) {
+	rsp, err := c.GetHitlDetail(ctx, dagId, dagRunId, taskId, mapIndex, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetHitlDetailResponse(rsp)
+}
+
+// UpdateHitlDetailWithBodyWithResponse Update Hitl Detail
+//
+// Update a Human-in-the-loop detail.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+func (c *ClientWithResponses) UpdateHitlDetailWithBodyWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateHitlDetailResponse, error) {
+	rsp, err := c.UpdateHitlDetailWithBody(ctx, dagId, dagRunId, taskId, mapIndex, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateHitlDetailResponse(rsp)
+}
+
+// UpdateHitlDetailWithResponse Update Hitl Detail
+//
+// Update a Human-in-the-loop detail.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails (the `UpdateHitlDetail` operationId).
+func (c *ClientWithResponses) UpdateHitlDetailWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, body UpdateHitlDetailJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateHitlDetailResponse, error) {
+	rsp, err := c.UpdateHitlDetail(ctx, dagId, dagRunId, taskId, mapIndex, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateHitlDetailResponse(rsp)
+}
+
+// GetHitlDetailTryDetailWithResponse Get Hitl Detail Try Detail
+//
+// Get a Human-in-the-loop detail of a specific task instance.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_id}/{map_index}/hitlDetails/tries/{try_number} (the `GetHitlDetailTryDetail` operationId).
+func (c *ClientWithResponses) GetHitlDetailTryDetailWithResponse(ctx context.Context, dagId string, dagRunId string, taskId string, mapIndex int, tryNumber int, reqEditors ...RequestEditorFn) (*GetHitlDetailTryDetailResponse, error) {
+	rsp, err := c.GetHitlDetailTryDetail(ctx, dagId, dagRunId, taskId, mapIndex, tryNumber, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetHitlDetailTryDetailResponse(rsp)
+}
+
 // GetMappedTaskInstanceTriesWithResponse Get Mapped Task Instance Tries
 //
 // Returns a wrapper object for the known response body format(s).
@@ -19820,6 +23135,21 @@ func (c *ClientWithResponses) GetUpstreamAssetEventsWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParseGetUpstreamAssetEventsResponse(rsp)
+}
+
+// WaitDagRunUntilFinishedWithResponse Experimental: Wait for a dag run to complete, and return task results if requested.
+//
+// 🚧 This is an experimental endpoint and may change or be removed without notice.Successful response are streamed as newline-delimited JSON (NDJSON). Each line is a JSON object representing the DAG run state.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v2/dags/{dag_id}/dagRuns/{dag_run_id}/wait (the `WaitDagRunUntilFinished` operationId).
+func (c *ClientWithResponses) WaitDagRunUntilFinishedWithResponse(ctx context.Context, dagId string, dagRunId string, params *WaitDagRunUntilFinishedParams, reqEditors ...RequestEditorFn) (*WaitDagRunUntilFinishedResponse, error) {
+	rsp, err := c.WaitDagRunUntilFinished(ctx, dagId, dagRunId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWaitDagRunUntilFinishedResponse(rsp)
 }
 
 // GetDagVersionsWithResponse Get Dag Versions
@@ -19869,6 +23199,21 @@ func (c *ClientWithResponses) GetDagDetailsWithResponse(ctx context.Context, dag
 	return ParseGetDagDetailsResponse(rsp)
 }
 
+// FavoriteDagWithResponse Favorite Dag
+//
+// Mark the DAG as favorite.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v2/dags/{dag_id}/favorite (the `FavoriteDag` operationId).
+func (c *ClientWithResponses) FavoriteDagWithResponse(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*FavoriteDagResponse, error) {
+	rsp, err := c.FavoriteDag(ctx, dagId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFavoriteDagResponse(rsp)
+}
+
 // GetTasksWithResponse Get Tasks
 //
 // Get tasks for DAG.
@@ -19897,6 +23242,21 @@ func (c *ClientWithResponses) GetTaskWithResponse(ctx context.Context, dagId str
 		return nil, err
 	}
 	return ParseGetTaskResponse(rsp)
+}
+
+// UnfavoriteDagWithResponse Unfavorite Dag
+//
+// Unmark the DAG as favorite.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v2/dags/{dag_id}/unfavorite (the `UnfavoriteDag` operationId).
+func (c *ClientWithResponses) UnfavoriteDagWithResponse(ctx context.Context, dagId string, reqEditors ...RequestEditorFn) (*UnfavoriteDagResponse, error) {
+	rsp, err := c.UnfavoriteDag(ctx, dagId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUnfavoriteDagResponse(rsp)
 }
 
 // GetEventLogsWithResponse Get Event Logs
@@ -20011,6 +23371,19 @@ func (c *ClientWithResponses) GetPluginsWithResponse(ctx context.Context, params
 		return nil, err
 	}
 	return ParseGetPluginsResponse(rsp)
+}
+
+// ImportErrorsWithResponse Import Errors
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v2/plugins/importErrors (the `ImportErrors` operationId).
+func (c *ClientWithResponses) ImportErrorsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ImportErrorsResponse, error) {
+	rsp, err := c.ImportErrors(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseImportErrorsResponse(rsp)
 }
 
 // GetPoolsWithResponse Get Pools
@@ -20658,6 +24031,13 @@ func ParseMaterializeAssetResponse(rsp *http.Response) (*MaterializeAssetRespons
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest HTTPExceptionResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -20783,13 +24163,6 @@ func ParseGetAssetQueuedEventsResponse(rsp *http.Response) (*GetAssetQueuedEvent
 		}
 		response.JSON403 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest HTTPExceptionResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
 		var dest HTTPValidationError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -20870,13 +24243,6 @@ func ParseLogoutResponse(rsp *http.Response) (*LogoutResponse, error) {
 		}
 		response.JSON307 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
-		var dest HTTPValidationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON422 = &dest
-
 	}
 
 	return response, nil
@@ -20949,6 +24315,13 @@ func ParseCreateBackfillResponse(rsp *http.Response) (*CreateBackfillResponse, e
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest HTTPExceptionResponse
@@ -21819,60 +25192,6 @@ func ParsePatchConnectionResponse(rsp *http.Response) (*PatchConnectionResponse,
 	return response, nil
 }
 
-// ParseGetDagReportsResponse parses an HTTP response from a GetDagReportsWithResponse call
-func ParseGetDagReportsResponse(rsp *http.Response) (*GetDagReportsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetDagReportsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest interface{}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest HTTPExceptionResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest HTTPExceptionResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest HTTPExceptionResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
-		var dest HTTPValidationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON422 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetDagSourceResponse parses an HTTP response from a GetDagSourceWithResponse call
 func ParseGetDagSourceResponse(rsp *http.Response) (*GetDagSourceResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -22482,13 +25801,6 @@ func ParseGetDagAssetQueuedEventsResponse(rsp *http.Response) (*GetDagAssetQueue
 		}
 		response.JSON403 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest HTTPExceptionResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
 		var dest HTTPValidationError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -22653,6 +25965,13 @@ func ParsePostClearTaskInstancesResponse(rsp *http.Response) (*PostClearTaskInst
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
 		var dest HTTPValidationError
@@ -23068,6 +26387,53 @@ func ParseClearDagRunResponse(rsp *http.Response) (*ClearDagRunResponse, error) 
 	return response, nil
 }
 
+// ParseGetHitlDetailsResponse parses an HTTP response from a GetHitlDetailsWithResponse call
+func ParseGetHitlDetailsResponse(rsp *http.Response) (*GetHitlDetailsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetHitlDetailsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest HITLDetailCollection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetTaskInstancesResponse parses an HTTP response from a GetTaskInstancesWithResponse call
 func ParseGetTaskInstancesResponse(rsp *http.Response) (*GetTaskInstancesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -23077,6 +26443,114 @@ func ParseGetTaskInstancesResponse(rsp *http.Response) (*GetTaskInstancesRespons
 	}
 
 	response := &GetTaskInstancesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TaskInstanceCollectionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseBulkTaskInstancesResponse parses an HTTP response from a BulkTaskInstancesWithResponse call
+func ParseBulkTaskInstancesResponse(rsp *http.Response) (*BulkTaskInstancesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &BulkTaskInstancesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BulkResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTaskInstancesBatchResponse parses an HTTP response from a GetTaskInstancesBatchWithResponse call
+func ParseGetTaskInstancesBatchResponse(rsp *http.Response) (*GetTaskInstancesBatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTaskInstancesBatchResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -23122,22 +26596,22 @@ func ParseGetTaskInstancesResponse(rsp *http.Response) (*GetTaskInstancesRespons
 	return response, nil
 }
 
-// ParseGetTaskInstancesBatchResponse parses an HTTP response from a GetTaskInstancesBatchWithResponse call
-func ParseGetTaskInstancesBatchResponse(rsp *http.Response) (*GetTaskInstancesBatchResponse, error) {
+// ParseDeleteTaskInstanceResponse parses an HTTP response from a DeleteTaskInstanceWithResponse call
+func ParseDeleteTaskInstanceResponse(rsp *http.Response) (*DeleteTaskInstanceResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetTaskInstancesBatchResponse{
+	response := &DeleteTaskInstanceResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest TaskInstanceCollectionResponse
+		var dest interface{}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -23368,6 +26842,67 @@ func ParsePatchTaskInstanceDryRunResponse(rsp *http.Response) (*PatchTaskInstanc
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest TaskInstanceCollectionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetExternalLogUrlResponse parses an HTTP response from a GetExternalLogUrlWithResponse call
+func ParseGetExternalLogUrlResponse(rsp *http.Response) (*GetExternalLogUrlResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetExternalLogUrlResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ExternalLogUrlResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -23808,6 +27343,63 @@ func ParseCreateXcomEntryResponse(rsp *http.Response) (*CreateXcomEntryResponse,
 	return response, nil
 }
 
+// ParseDeleteXcomEntryResponse parses an HTTP response from a DeleteXcomEntryWithResponse call
+func ParseDeleteXcomEntryResponse(rsp *http.Response) (*DeleteXcomEntryResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteXcomEntryResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetXcomEntryResponse parses an HTTP response from a GetXcomEntryWithResponse call
 func ParseGetXcomEntryResponse(rsp *http.Response) (*GetXcomEntryResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -24167,6 +27759,175 @@ func ParsePatchTaskInstanceDryRunByMapIndexResponse(rsp *http.Response) (*PatchT
 	return response, nil
 }
 
+// ParseGetHitlDetailResponse parses an HTTP response from a GetHitlDetailWithResponse call
+func ParseGetHitlDetailResponse(rsp *http.Response) (*GetHitlDetailResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetHitlDetailResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest HITLDetail
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateHitlDetailResponse parses an HTTP response from a UpdateHitlDetailWithResponse call
+func ParseUpdateHitlDetailResponse(rsp *http.Response) (*UpdateHitlDetailResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateHitlDetailResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest HITLDetailResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetHitlDetailTryDetailResponse parses an HTTP response from a GetHitlDetailTryDetailWithResponse call
+func ParseGetHitlDetailTryDetailResponse(rsp *http.Response) (*GetHitlDetailTryDetailResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetHitlDetailTryDetailResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest HITLDetailHistory
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetMappedTaskInstanceTriesResponse parses an HTTP response from a GetMappedTaskInstanceTriesWithResponse call
 func ParseGetMappedTaskInstanceTriesResponse(rsp *http.Response) (*GetMappedTaskInstanceTriesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -24323,6 +28084,63 @@ func ParseGetUpstreamAssetEventsResponse(rsp *http.Response) (*GetUpstreamAssetE
 			return nil, err
 		}
 		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWaitDagRunUntilFinishedResponse parses an HTTP response from a WaitDagRunUntilFinishedWithResponse call
+func ParseWaitDagRunUntilFinishedResponse(rsp *http.Response) (*WaitDagRunUntilFinishedResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WaitDagRunUntilFinishedResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case rsp.StatusCode == 200:
+		// Content-type (application/x-ndjson) unsupported
 
 	}
 
@@ -24498,6 +28316,56 @@ func ParseGetDagDetailsResponse(rsp *http.Response) (*GetDagDetailsResponse, err
 	return response, nil
 }
 
+// ParseFavoriteDagResponse parses an HTTP response from a FavoriteDagWithResponse call
+func ParseFavoriteDagResponse(rsp *http.Response) (*FavoriteDagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &FavoriteDagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetTasksResponse parses an HTTP response from a GetTasksWithResponse call
 func ParseGetTasksResponse(rsp *http.Response) (*GetTasksResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -24607,6 +28475,63 @@ func ParseGetTaskResponse(rsp *http.Response) (*GetTaskResponse, error) {
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUnfavoriteDagResponse parses an HTTP response from a UnfavoriteDagWithResponse call
+func ParseUnfavoriteDagResponse(rsp *http.Response) (*UnfavoriteDagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UnfavoriteDagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
 		var dest HTTPValidationError
@@ -24917,7 +28842,7 @@ func ParseReparseDagFileResponse(rsp *http.Response) (*ReparseDagFileResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest any
+		var dest interface{}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -24997,6 +28922,46 @@ func ParseGetPluginsResponse(rsp *http.Response) (*GetPluginsResponse, error) {
 			return nil, err
 		}
 		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseImportErrorsResponse parses an HTTP response from a ImportErrorsWithResponse call
+func ParseImportErrorsResponse(rsp *http.Response) (*ImportErrorsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ImportErrorsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PluginImportErrorCollectionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest HTTPExceptionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
