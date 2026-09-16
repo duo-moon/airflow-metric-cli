@@ -43,6 +43,10 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - uses: golangci/golangci-lint-action@v6
+      # v9 requires golangci-lint v2 (our .golangci.yml is already v2-format)
+      # and runs on Node 24 (v6 used Node 20 → deprecation warning). Pin
+      # `version: v2` alias so we get the latest v2 release without
+      # unpredictable jumps into a hypothetical v3 later.
+      - uses: golangci/golangci-lint-action@v9
         with:
-          version: latest
+          version: v2
